@@ -1,0 +1,67 @@
+/* Typography 스타일 가이드 */
+
+/* 기본 폰트 설정 */
+body {
+  font-family: var(--font-pretendard);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* 제목 스타일 (Revalia 사용 예시) */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-revalia);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* 본문 텍스트 */
+p, span, div, a {
+  font-family: var(--font-pretendard);
+}
+
+/* 폰트 웨이트 유틸리티 클래스 */
+.font-thin {
+  font-weight: 100;
+}
+
+.font-extralight {
+  font-weight: 200;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-extrabold {
+  font-weight: 800;
+}
+
+.font-black {
+  font-weight: 900;
+}
+
+/* 폰트 패밀리 유틸리티 클래스 */
+.font-pretendard {
+  font-family: var(--font-pretendard);
+}
+
+.font-revalia {
+  font-family: var(--font-revalia);
+}
+

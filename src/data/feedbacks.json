@@ -1,0 +1,62 @@
+{
+  "feedbacks": [
+    {
+      "feedback_id": "fb_001",
+      "writer": {
+        "user_id": "ux_researcher_01",
+        "company": "design_hub",
+        "career_year": 3
+      },
+      "project": {
+        "project_id": "pj_100",
+        "project_name": "shopping_app_redesign",
+        "project_description": "사용자 구매 전환율 향상을 위한 쇼핑앱 UX 개선 프로젝트",
+        "platform_type": "app",
+        "category": "ecommerce"
+      },
+      "design_screen": {
+        "screen_name": "product_detail",
+        "images": [
+          { "image_url": "https://example.com/img1.png", "order": 1 },
+          { "image_url": "https://example.com/img2.png", "order": 2 }
+        ]
+      },
+      "feedback_content": {
+        "question": "이 화면에서 구매 버튼의 위치는 적절한가요?",
+        "answer": {
+          "text": "구매 버튼이 너무 아래쪽에 있어 시각적으로 잘 보이지 않습니다.",
+          "matched_screen_number": 2
+        }
+      }
+    },
+    {
+      "feedback_id": "fb_002",
+      "writer": {
+        "user_id": "designer_kim",
+        "company": "uxlab",
+        "career_year": 5
+      },
+      "project": {
+        "project_id": "pj_200",
+        "project_name": "web_dashboard_renewal",
+        "project_description": "관리자용 웹 대시보드 IA 개선 및 시각적 구조 재정비",
+        "platform_type": "web",
+        "category": "dashboard"
+      },
+      "design_screen": {
+        "screen_name": "overview_dashboard",
+        "images": [
+          { "image_url": "https://example.com/dash1.png", "order": 1 }
+        ]
+      },
+      "feedback_content": {
+        "question": "데이터 카드 간 간격이 적절한가요?",
+        "answer": {
+          "text": "요약 카드 간 간격이 너무 좁아 정보가 밀집되어 보입니다.",
+          "matched_screen_number": 1
+        }
+      }
+    }
+  ]
+}
+

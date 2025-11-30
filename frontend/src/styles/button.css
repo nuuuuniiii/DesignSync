@@ -1,0 +1,79 @@
+/* Button Styles */
+
+.btn {
+  font-family: var(--font-pretendard);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: #000000;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #333333;
+}
+
+.btn-secondary {
+  background: #f5f5f5;
+  color: #000000;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.btn-medium {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.btn-large {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+.btn-add-project {
+  background: #000000;
+  color: #ffffff;
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-add-project .plus-icon {
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1;
+}
+
