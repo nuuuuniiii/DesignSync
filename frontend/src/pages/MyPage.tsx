@@ -17,7 +17,8 @@ interface Project {
 /**
  * My Page 화면
  *
- * Figma 디자인: https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-5024&m=dev
+ * Apps 버전: https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-5024&m=dev
+ * Web 버전: https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-5028&m=dev
  *
  * 구성 요소:
  * - My Project 섹션: 내가 등록한 프로젝트 목록, Select 모드 지원
@@ -25,20 +26,20 @@ interface Project {
  */
 export const MyPage = () => {
   const navigate = useNavigate()
-  const [platform, setPlatform] = useState<PlatformType>('apps')
+  const [platform, setPlatform] = useState<PlatformType>('webs') // Web 버전 기본값
   const [selectMode, setSelectMode] = useState(false)
   const [selectedProjects, setSelectedProjects] = useState<string[]>([])
 
-  // Mock 데이터 - My Project
-  const myProjects: Project[] = Array.from({ length: 8 }, (_, i) => ({
+  // Mock 데이터 - My Project (Web: 6개, Apps: 8개)
+  const myProjects: Project[] = Array.from({ length: platform === 'webs' ? 6 : 8 }, (_, i) => ({
     id: String(i + 1),
     name: 'T map',
     subtitle: 'UX/UI Flow Redesign',
-    hasNewFeedback: i < 4, // 처음 4개는 새 피드백 있음
+    hasNewFeedback: i < (platform === 'webs' ? 3 : 4), // Web은 처음 3개, Apps는 처음 4개
   }))
 
   // Mock 데이터 - My Feedback
-  const feedbackProjects: Project[] = Array.from({ length: 8 }, (_, i) => ({
+  const feedbackProjects: Project[] = Array.from({ length: 3 }, (_, i) => ({
     id: String(i + 1),
     name: 'T map',
     subtitle: 'UX/UI Flow Redesign',
@@ -86,10 +87,10 @@ export const MyPage = () => {
 
   return (
     <Layout>
-      <div className="my-page">
+      <div className={`my-page ${platform === 'webs' ? 'my-page-web' : 'my-page-apps'}`}>
         {/* My Project Section */}
         <div className="my-project-section">
-          <div className="my-project-header">
+          <div className={`my-project-header ${platform === 'webs' ? 'my-project-header-web' : 'my-project-header-app'}`}>
             <div className="my-project-header-left">
               <h2 className="my-project-title">My Project</h2>
               <div className="platform-filters">
@@ -107,7 +108,7 @@ export const MyPage = () => {
                 </button>
               </div>
             </div>
-            <div className="my-project-header-right">
+            <div className={`my-project-header-right ${platform === 'webs' ? 'my-project-header-right-web' : ''}`}>
               {!selectMode ? (
                 <>
                   <Button
@@ -153,38 +154,75 @@ export const MyPage = () => {
             </div>
           </div>
           <div className="my-project-grid">
-            {Array.from({ length: Math.ceil(myProjects.length / 4) }, (_, rowIndex) => (
-              <div key={rowIndex} className="my-project-row">
-                {myProjects.slice(rowIndex * 4, rowIndex * 4 + 4).map((project) => (
-                  <div
-                    key={project.id}
-                    className={`my-project-item ${
-                      selectedProjects.includes(project.id) ? 'selected' : ''
-                    }`}
-                    onClick={() => handleProjectClick(project.id)}
-                  >
-                    <div className="my-project-card">
-                      <div className="my-project-image-wrapper">
-                        {project.imageUrl ? (
-                          <img src={project.imageUrl} alt={project.name} className="my-project-image" />
-                        ) : (
-                          <div className="my-project-placeholder"></div>
+            {platform === 'webs' ? (
+              // Web 버전: 2행 × 3열
+              Array.from({ length: Math.ceil(myProjects.length / 3) }, (_, rowIndex) => (
+                <div key={rowIndex} className="my-project-row my-project-row-web">
+                  {myProjects.slice(rowIndex * 3, rowIndex * 3 + 3).map((project) => (
+                    <div
+                      key={project.id}
+                      className={`my-project-item my-project-item-web ${
+                        selectedProjects.includes(project.id) ? 'selected' : ''
+                      }`}
+                      onClick={() => handleProjectClick(project.id)}
+                    >
+                      <div className="my-project-card my-project-card-web">
+                        <div className="my-project-image-wrapper my-project-image-wrapper-web">
+                          {project.imageUrl ? (
+                            <img src={project.imageUrl} alt={project.name} className="my-project-image" />
+                          ) : (
+                            <div className="my-project-placeholder"></div>
+                          )}
+                        </div>
+                        {project.hasNewFeedback && (
+                          <div className="my-project-feedback-icon my-project-feedback-icon-web">
+                            <CommentIcon hasNewFeedback={true} width={32} height={32} />
+                          </div>
                         )}
                       </div>
-                      {project.hasNewFeedback && (
-                        <div className="my-project-feedback-icon">
-                          <CommentIcon hasNewFeedback={true} width={32} height={32} />
+                      <div className="my-project-description">
+                        <h3 className="my-project-name">{project.name}</h3>
+                        {project.subtitle && <p className="my-project-subtitle">{project.subtitle}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))
+            ) : (
+              // Apps 버전: 2행 × 4열
+              Array.from({ length: Math.ceil(myProjects.length / 4) }, (_, rowIndex) => (
+                <div key={rowIndex} className="my-project-row my-project-row-apps">
+                  {myProjects.slice(rowIndex * 4, rowIndex * 4 + 4).map((project) => (
+                    <div
+                      key={project.id}
+                      className={`my-project-item my-project-item-apps ${
+                        selectedProjects.includes(project.id) ? 'selected' : ''
+                      }`}
+                      onClick={() => handleProjectClick(project.id)}
+                    >
+                      <div className="my-project-card my-project-card-apps">
+                        <div className="my-project-image-wrapper">
+                          {project.imageUrl ? (
+                            <img src={project.imageUrl} alt={project.name} className="my-project-image" />
+                          ) : (
+                            <div className="my-project-placeholder"></div>
+                          )}
                         </div>
-                      )}
+                        {project.hasNewFeedback && (
+                          <div className="my-project-feedback-icon">
+                            <CommentIcon hasNewFeedback={true} width={32} height={32} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="my-project-description">
+                        <h3 className="my-project-name">{project.name}</h3>
+                        {project.subtitle && <p className="my-project-subtitle">{project.subtitle}</p>}
+                      </div>
                     </div>
-                    <div className="my-project-description">
-                      <h3 className="my-project-name">{project.name}</h3>
-                      {project.subtitle && <p className="my-project-subtitle">{project.subtitle}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
+                  ))}
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -208,16 +246,17 @@ export const MyPage = () => {
             </div>
           </div>
           <div className="my-feedback-grid">
-            {Array.from({ length: Math.ceil(feedbackProjects.length / 4) }, (_, rowIndex) => (
-              <div key={rowIndex} className="my-feedback-row">
-                {feedbackProjects.slice(rowIndex * 4, rowIndex * 4 + 4).map((project) => (
+            {platform === 'webs' ? (
+              // Web 버전: 1행 × 3열
+              <div className="my-feedback-row my-feedback-row-web">
+                {feedbackProjects.map((project) => (
                   <div
                     key={project.id}
-                    className="my-feedback-item"
+                    className="my-feedback-item my-feedback-item-web"
                     onClick={() => navigate(`/projects/${project.id}`)}
                   >
-                    <div className="my-feedback-card">
-                      <div className="my-feedback-image-wrapper">
+                    <div className="my-feedback-card my-feedback-card-web">
+                      <div className="my-feedback-image-wrapper my-feedback-image-wrapper-web">
                         {project.imageUrl ? (
                           <img
                             src={project.imageUrl}
@@ -236,7 +275,38 @@ export const MyPage = () => {
                   </div>
                 ))}
               </div>
-            ))}
+            ) : (
+              // Apps 버전: 2행 × 4열
+              Array.from({ length: Math.ceil(feedbackProjects.length / 4) }, (_, rowIndex) => (
+                <div key={rowIndex} className="my-feedback-row my-feedback-row-apps">
+                  {feedbackProjects.slice(rowIndex * 4, rowIndex * 4 + 4).map((project) => (
+                    <div
+                      key={project.id}
+                      className="my-feedback-item my-feedback-item-apps"
+                      onClick={() => navigate(`/projects/${project.id}`)}
+                    >
+                      <div className="my-feedback-card my-feedback-card-apps">
+                        <div className="my-feedback-image-wrapper">
+                          {project.imageUrl ? (
+                            <img
+                              src={project.imageUrl}
+                              alt={project.name}
+                              className="my-feedback-image"
+                            />
+                          ) : (
+                            <div className="my-feedback-placeholder"></div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="my-feedback-description">
+                        <h3 className="my-feedback-name">{project.name}</h3>
+                        {project.subtitle && <p className="my-feedback-subtitle">{project.subtitle}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
