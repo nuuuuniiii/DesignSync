@@ -387,3 +387,102 @@
   padding: 0;
 }
 
+/* Web 버전 스타일 */
+.my-page-web {
+  /* Web 버전 전용 스타일 */
+}
+
+/* My Project Header Web */
+.my-project-header-right-web {
+  padding: 0 36px 0 0;
+}
+
+/* My Project Row Web */
+.my-project-row-web {
+  padding: 30px 26px 30px 61px;
+  gap: 0;
+  justify-content: space-between;
+  width: 1512px;
+  box-sizing: border-box;
+}
+
+.my-project-row-web:first-of-type {
+  padding: 30px 26px 30px 61px;
+}
+
+.my-project-row-web:not(:first-of-type) {
+  padding: 30px 26px 30px 61px;
+}
+
+.my-project-item-web {
+  flex: 0 0 auto;
+  padding: 20px 10px;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-project-card-web {
+  width: 440px;
+  height: 273px;
+  border-radius: 15px;
+  box-shadow: none;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.my-project-image-wrapper-web {
+  border-radius: 15px;
+}
+
+.my-project-feedback-icon-web {
+  top: 14px;
+  left: 14px;
+  right: auto;
+}
+
+/* My Feedback Row Web (Others web) */
+.my-feedback-row-web {
+  padding: 30px 26px 30px 56px;
+  gap: 0;
+  justify-content: space-between;
+  width: 1512px;
+  box-sizing: border-box;
+}
+
+.my-feedback-item-web {
+  flex: 0 0 auto;
+  padding: 20px 10px;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.my-feedback-card-web {
+  width: 440px;
+  height: 273px;
+  border-radius: 15px;
+  box-shadow: none;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.my-feedback-image-wrapper-web {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.my-feedback-image-wrapper-web {
+  height: 273px;
+  border-radius: 15px;
+}
+
