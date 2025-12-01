@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Layout, Button, StarRating, ScreenCard, FeedbackItem } from '../components'
-import './project-overview.css'
+import './project-overview-app.css'
 
-export const ProjectOverviewPage = () => {
+export const ProjectOverviewAppPage = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
 
@@ -81,7 +81,11 @@ export const ProjectOverviewPage = () => {
   }
 
   const handleScreenClick = (screenId: string) => {
-    // Handle screen click
+    // Scroll to Feedbacks section
+    const feedbacksSection = document.querySelector('.feedbacks-section')
+    if (feedbacksSection) {
+      feedbacksSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   const handleMenuAction = (action: 'delete' | 'edit' | 'report', feedbackId: string) => {
@@ -213,3 +217,4 @@ export const ProjectOverviewPage = () => {
     </Layout>
   )
 }
+

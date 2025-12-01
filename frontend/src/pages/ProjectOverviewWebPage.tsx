@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Layout, Button, StarRating, ScreenCard, FeedbackItem } from '../components'
-import './project-overview.css'
+import './project-overview-web.css'
 
-export const ProjectOverviewPage = () => {
+export const ProjectOverviewWebPage = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
 
   // Mock data
   const projectName = 'Toss Redesign Project'
   const creator = 'J**** | 토스 2년차'
-  const platform = 'App'
+  const platform = 'Web'
   const description = 'Streamlining key tasks to reduce friction and make financial actions faster and more intuitive.'
   const category = 'E-Commerce'
 
@@ -21,7 +21,7 @@ export const ProjectOverviewPage = () => {
     { id: '2', name: 'Interaction Design', rating: 3 },
     { id: '3', name: 'Visual Design', rating: 3 },
     { id: '4', name: 'UX Writing', rating: 3 },
-    { id: '5', name: 'Information Architecture', rating: 5 },
+    { id: '5', name: 'Information Architecture', rating: 3 },
     { id: '6', name: 'Usability', rating: 3 },
   ]
 
@@ -81,7 +81,11 @@ export const ProjectOverviewPage = () => {
   }
 
   const handleScreenClick = (screenId: string) => {
-    // Handle screen click
+    // Scroll to Feedbacks section
+    const feedbacksSection = document.querySelector('.feedbacks-section')
+    if (feedbacksSection) {
+      feedbacksSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   const handleMenuAction = (action: 'delete' | 'edit' | 'report', feedbackId: string) => {
@@ -93,8 +97,8 @@ export const ProjectOverviewPage = () => {
   const rightRatings = ratingTypes.slice(3, 6)
 
   return (
-    <Layout>
-      <div className="project-overview-page">
+    <Layout selectedPlatform="web">
+      <div className="project-overview-web-page">
         {/* Project Section */}
         <div className="project-section">
           <div className="project-header-info">
@@ -110,14 +114,13 @@ export const ProjectOverviewPage = () => {
               Add Feedback
             </Button>
           </div>
-          <div className="project-meta">
-            <div className="platform-tag">{platform}</div>
-            <p className="project-description">{description}</p>
-          </div>
           <div className="category-field">
-            <p className="category-text">
-              Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/
-            </p>
+            <div className="platform-tag">{platform}</div>
+            <div className="category-select">
+              <p className="category-text">
+                Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/
+              </p>
+            </div>
           </div>
         </div>
 
@@ -213,3 +216,4 @@ export const ProjectOverviewPage = () => {
     </Layout>
   )
 }
+

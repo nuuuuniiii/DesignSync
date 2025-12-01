@@ -4,8 +4,11 @@ import {
   MyPage,
   ProjectRegisterPage,
   ProjectOverviewPage,
+  ProjectOverviewAppPage,
+  ProjectOverviewWebPage,
   NewFeedbackRatingPage,
   NewFeedbackScreenPage,
+  RegistrationPage,
 } from './pages'
 
 function App() {
@@ -17,6 +20,8 @@ function App() {
         <Route path="/my-page" element={<MyPage />} />
         <Route path="/projects/new" element={<ProjectRegisterPage />} />
         <Route path="/projects/:projectId" element={<ProjectOverviewPage />} />
+        <Route path="/projects/:projectId/app" element={<ProjectOverviewAppPage />} />
+        <Route path="/projects/:projectId/web" element={<ProjectOverviewWebPage />} />
         <Route path="/projects/:projectId/edit" element={<ProjectRegisterPage />} />
         <Route
           path="/projects/:projectId/feedback/rating"
@@ -26,6 +31,7 @@ function App() {
           path="/projects/:projectId/feedback/screen"
           element={<NewFeedbackScreenPage />}
         />
+        <Route path="/registration" element={<RegistrationPage />} />
         <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </BrowserRouter>
