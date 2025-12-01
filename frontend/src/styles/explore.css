@@ -288,6 +288,7 @@
 }
 
 .app-project-item {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 18px;

@@ -155,8 +155,12 @@ export const ExplorePage = () => {
                 Array.from({ length: Math.ceil(filteredProjects.length / 4) }, (_, rowIndex) => (
                   <div key={rowIndex} className="others-app-section">
                     {filteredProjects.slice(rowIndex * 4, rowIndex * 4 + 4).map((project) => (
-                      <div key={project.id} className="app-project-item">
-                        <div className="app-project-card" onClick={() => handleProjectClick(project.id)}>
+                      <div
+                        key={project.id}
+                        className="app-project-item"
+                        onClick={() => handleProjectClick(project.id)}
+                      >
+                        <div className="app-project-card">
                           <div className="app-project-image-wrapper">
                             {project.imageUrl ? (
                               <img src={project.imageUrl} alt={project.name} className="app-project-image" />

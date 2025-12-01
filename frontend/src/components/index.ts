@@ -30,4 +30,7 @@ export { RadioGroup } from './RadioGroup/RadioGroup'
 export { RatingSlider } from './RatingSlider/RatingSlider'
 export { ImageUpload } from './ImageUpload/ImageUpload'
 export { ResolvedTag } from './ResolvedTag/ResolvedTag'
+export { StarRating } from './StarRating/StarRating'
+export { FeedbackItem } from './FeedbackItem/FeedbackItem'
+export { ScreenCard } from './ScreenCard/ScreenCard'
 
