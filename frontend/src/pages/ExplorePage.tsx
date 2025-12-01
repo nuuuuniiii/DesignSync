@@ -54,7 +54,7 @@ export const ExplorePage = () => {
     subtitle: 'UX/UI Flow Redesign',
     category: 'Technology',
     // 처음 4개는 unresolved, 나머지는 resolved
-    status: (i < 4 ? 'unresolved' : 'resolved') as const,
+    status: i < 4 ? 'unresolved' : 'resolved',
   }))
 
   const filteredProjects = projects.filter((project) => {
@@ -65,7 +65,14 @@ export const ExplorePage = () => {
   })
 
   const handleProjectClick = (projectId: string) => {
-    navigate(`/projects/${projectId}`)
+    // Apps 플랫폼일 때는 ProjectOverviewAppPage로 이동
+    // Apps 화면에서 카드를 클릭하면 항상 ProjectOverviewAppPage로 이동
+    if (platform === 'apps') {
+      navigate(`/projects/${projectId}`)
+    } else {
+      // Web 플랫폼일 때는 ProjectOverviewWebPage로 이동
+      navigate(`/projects/${projectId}/web`)
+    }
   }
 
   const handleAddProject = () => {
@@ -158,7 +165,12 @@ export const ExplorePage = () => {
                       <div
                         key={project.id}
                         className="app-project-item"
-                        onClick={() => handleProjectClick(project.id)}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          console.log('Navigating to:', `/projects/${project.id}`)
+                          navigate(`/projects/${project.id}`)
+                        }}
                       >
                         <div className="app-project-card">
                           <div className="app-project-image-wrapper">

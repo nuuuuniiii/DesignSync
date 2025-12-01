@@ -5,7 +5,7 @@ import { Button } from '@/components/Button/Button'
 import { CommentIcon } from '@/components/Icon/CommentIcon'
 import { ResolvedTag } from '@/components/ResolvedTag/ResolvedTag'
 
-type PlatformType = 'apps' | 'webs'
+type PlatformType = 'apps' | 'web'
 
 interface Project {
   id: string
@@ -33,7 +33,7 @@ export const MyPage = () => {
   const [selectedProjects, setSelectedProjects] = useState<string[]>([])
 
   // Mock 데이터 - My Project (Web: 6개, Apps: 8개)
-  const myProjects: Project[] = Array.from({ length: platform === 'webs' ? 6 : 8 }, (_, i) => ({
+  const myProjects: Project[] = Array.from({ length: platform === 'web' ? 6 : 8 }, (_, i) => ({
     id: String(i + 1),
     name: 'T map',
     subtitle: 'UX/UI Flow Redesign',
@@ -59,7 +59,11 @@ export const MyPage = () => {
     if (selectMode) {
       handleProjectSelect(projectId)
     } else {
-      navigate(`/projects/${projectId}`)
+      if (platform === 'apps') {
+        navigate(`/projects/${projectId}`)
+      } else {
+        navigate(`/projects/${projectId}/web`)
+      }
     }
   }
 
@@ -102,10 +106,10 @@ export const MyPage = () => {
 
   return (
     <Layout>
-      <div className={`my-page ${platform === 'webs' ? 'my-page-web' : 'my-page-apps'}`}>
+      <div className={`my-page ${platform === 'web' ? 'my-page-web' : 'my-page-apps'}`}>
         {/* My Project Section */}
         <div className="my-project-section">
-          <div className={`my-project-header ${platform === 'webs' ? 'my-project-header-web' : 'my-project-header-app'}`}>
+          <div className={`my-project-header ${platform === 'web' ? 'my-project-header-web' : 'my-project-header-app'}`}>
             <div className="my-project-header-left">
               <h2 className="my-project-title">My Project</h2>
               <div className="platform-filters">
@@ -116,14 +120,14 @@ export const MyPage = () => {
                   Apps
                 </button>
                 <button
-                  onClick={() => setPlatform('webs')}
-                  className={`platform-filter ${platform === 'webs' ? 'active' : ''}`}
+                  onClick={() => setPlatform('web')}
+                  className={`platform-filter ${platform === 'web' ? 'active' : ''}`}
                 >
                   Webs
                 </button>
               </div>
             </div>
-            <div className={`my-project-header-right ${platform === 'webs' ? 'my-project-header-right-web' : ''}`}>
+            <div className={`my-project-header-right ${platform === 'web' ? 'my-project-header-right-web' : ''}`}>
               {!selectMode ? (
                 <>
                   <Button
@@ -169,7 +173,7 @@ export const MyPage = () => {
             </div>
           </div>
           <div className="my-project-grid">
-            {platform === 'webs' ? (
+            {platform === 'web' ? (
               // Web 버전: 2행 × 3열
               Array.from({ length: Math.ceil(myProjects.length / 3) }, (_, rowIndex) => (
                 <div key={rowIndex} className="my-project-row my-project-row-web">
@@ -309,14 +313,14 @@ export const MyPage = () => {
             </div>
           </div>
           <div className="my-feedback-grid">
-            {platform === 'webs' ? (
+            {platform === 'web' ? (
               // Web 버전: 1행 × 3열
               <div className="my-feedback-row my-feedback-row-web">
                 {feedbackProjects.map((project) => (
                   <div
                     key={project.id}
                     className="my-feedback-item my-feedback-item-web"
-                    onClick={() => navigate(`/projects/${project.id}`)}
+                    onClick={() => navigate(`/projects/${project.id}/web`)}
                   >
                     <div className="my-feedback-card my-feedback-card-web">
                       <div className="my-feedback-image-wrapper my-feedback-image-wrapper-web">
