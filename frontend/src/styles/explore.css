@@ -14,6 +14,16 @@
   width: 100%;
 }
 
+.projects-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.projects-content-apps {
+  gap: 20px;
+}
+
 /* Projects Main Section */
 .projects-main {
   flex: 1;
@@ -71,10 +81,10 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  width: 1512px;
-  height: 85.5852px;
+  width: 100%;
   background: #ffffff;
   box-sizing: border-box;
+  padding-bottom: 0;
 }
 
 .my-project-header-app-left {
@@ -127,6 +137,36 @@
 }
 
 .my-project-platform-filter:not(.active) {
+  color: #c3c3c3;
+}
+
+/* Apps 버전에서 Unresolved/Resolved 필터 스타일 */
+.my-project-header-app .my-project-platform-filters {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.my-project-header-app .my-project-platform-filter {
+  font-family: var(--font-pretendard);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 100%;
+  background: none;
+  border: none;
+  padding: 7.293px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.my-project-header-app .my-project-platform-filter.active {
+  color: #000000;
+  font-weight: 500;
+  border-bottom: 1px solid #000000;
+}
+
+.my-project-header-app .my-project-platform-filter:not(.active) {
   color: #c3c3c3;
 }
 
@@ -240,7 +280,7 @@
 /* Others App Section - 완전히 새로운 구조 */
 .others-app-section {
   display: flex;
-  width: 1512px;
+  width: 100%;
   padding: 30px 36px 30px 56px;
   justify-content: space-between;
   align-items: center;

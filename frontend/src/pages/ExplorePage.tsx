@@ -69,7 +69,7 @@ export const ExplorePage = () => {
   }
 
   const handleAddProject = () => {
-    navigate('/projects/new')
+    navigate('/registration')
   }
 
   return (
@@ -83,12 +83,13 @@ export const ExplorePage = () => {
             onCategorySelect={setSelectedCategory}
           />
 
-          {/* 오른쪽: Projects 섹션 */}
-          <main className="projects-main">
+          {/* Projects 섹션 */}
+          <div className={`projects-content ${platform === 'apps' ? 'projects-content-apps' : 'projects-content-web'}`}>
+            <main className="projects-main">
             {platform === 'apps' ? (
               <div className="my-project-header-app">
                 <div className="my-project-header-app-left">
-                  <h2 className="my-project-title">Projects</h2>
+                  <h2 className="my-project-title">My Project</h2>
                   <div className="my-project-platform-filters">
                     <button
                       onClick={() => setSelectedStatus('unresolved')}
@@ -193,6 +194,7 @@ export const ExplorePage = () => {
               )}
             </div>
           </main>
+          </div>
         </div>
       </div>
     </Layout>

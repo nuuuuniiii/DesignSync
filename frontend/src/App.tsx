@@ -6,6 +6,7 @@ import {
   ProjectOverviewPage,
   NewFeedbackRatingPage,
   NewFeedbackScreenPage,
+  RegistrationPage,
 } from './pages'
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           path="/projects/:projectId/feedback/screen"
           element={<NewFeedbackScreenPage />}
         />
+        <Route path="/registration" element={<RegistrationPage />} />
         <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </BrowserRouter>

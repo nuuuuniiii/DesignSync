@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout } from '@/components/Layout/Layout'
 import { Button } from '@/components/Button/Button'
 import { CommentIcon } from '@/components/Icon/CommentIcon'
+import { ResolvedTag } from '@/components/ResolvedTag/ResolvedTag'
 
 type PlatformType = 'apps' | 'webs'
 
@@ -12,13 +13,14 @@ interface Project {
   subtitle?: string
   imageUrl?: string
   hasNewFeedback?: boolean
+  isResolved?: boolean
 }
 
 /**
  * My Page 화면
  *
+ * Select 모드 (Apps): https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-5302&m=dev
  * Apps 버전: https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-5024&m=dev
- * Web 버전: https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-5028&m=dev
  *
  * 구성 요소:
  * - My Project 섹션: 내가 등록한 프로젝트 목록, Select 모드 지원
@@ -26,7 +28,7 @@ interface Project {
  */
 export const MyPage = () => {
   const navigate = useNavigate()
-  const [platform, setPlatform] = useState<PlatformType>('webs') // Web 버전 기본값
+  const [platform, setPlatform] = useState<PlatformType>('apps') // Apps 버전 기본값
   const [selectMode, setSelectMode] = useState(false)
   const [selectedProjects, setSelectedProjects] = useState<string[]>([])
 
@@ -35,15 +37,23 @@ export const MyPage = () => {
     id: String(i + 1),
     name: 'T map',
     subtitle: 'UX/UI Flow Redesign',
-    hasNewFeedback: i < (platform === 'webs' ? 3 : 4), // Web은 처음 3개, Apps는 처음 4개
+    hasNewFeedback: platform === 'apps' ? i < 4 : i < 3, // Apps는 처음 4개, Web은 처음 3개
+    isResolved: i === 0, // 첫 번째 카드만 Resolved 상태
   }))
 
-  // Mock 데이터 - My Feedback
-  const feedbackProjects: Project[] = Array.from({ length: 3 }, (_, i) => ({
+  // Mock 데이터 - My Feedback (Apps: 4개)
+  const feedbackProjects: Project[] = Array.from({ length: platform === 'apps' ? 4 : 3 }, (_, i) => ({
     id: String(i + 1),
     name: 'T map',
     subtitle: 'UX/UI Flow Redesign',
   }))
+
+  const handleSelectMode = () => {
+    setSelectMode(true)
+    // Select 모드 진입 시 모든 프로젝트를 자동 선택
+    const allProjectIds = myProjects.map((p) => p.id)
+    setSelectedProjects(allProjectIds)
+  }
 
   const handleProjectClick = (projectId: string) => {
     if (selectMode) {
@@ -82,7 +92,12 @@ export const MyPage = () => {
   }
 
   const handleAddProject = () => {
-    navigate('/projects/new')
+    navigate('/registration')
+  }
+
+  const handleCancelSelect = () => {
+    setSelectMode(false)
+    setSelectedProjects([])
   }
 
   return (
@@ -112,7 +127,7 @@ export const MyPage = () => {
               {!selectMode ? (
                 <>
                   <Button
-                    onClick={() => setSelectMode(true)}
+                    onClick={handleSelectMode}
                     variant="secondary"
                     className="btn-select"
                   >
@@ -124,7 +139,7 @@ export const MyPage = () => {
                   </Button>
                 </>
               ) : (
-                <>
+                <div className="select-mode-buttons">
                   <Button
                     onClick={handleResolved}
                     variant="primary"
@@ -149,7 +164,7 @@ export const MyPage = () => {
                   >
                     Delete
                   </Button>
-                </>
+                </div>
               )}
             </div>
           </div>
@@ -174,11 +189,34 @@ export const MyPage = () => {
                             <div className="my-project-placeholder"></div>
                           )}
                         </div>
-                        {project.hasNewFeedback && (
-                          <div className="my-project-feedback-icon my-project-feedback-icon-web">
-                            <CommentIcon hasNewFeedback={true} width={32} height={32} />
-                          </div>
-                        )}
+                        <div className="my-project-card-overlay">
+                          {selectMode ? (
+                            <div className="my-project-feedback-icon-area">
+                              {project.isResolved && (
+                                <div className="my-project-resolved-tag-wrapper">
+                                  <ResolvedTag visible={true} />
+                                </div>
+                              )}
+                              <div className="my-project-checkbox-wrapper">
+                                <div
+                                  className={`my-project-checkbox ${
+                                    selectedProjects.includes(project.id) ? 'checked' : ''
+                                  }`}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleProjectSelect(project.id)
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            project.hasNewFeedback && (
+                              <div className="my-project-feedback-icon my-project-feedback-icon-web">
+                                <CommentIcon hasNewFeedback={true} width={32} height={32} />
+                              </div>
+                            )
+                          )}
+                        </div>
                       </div>
                       <div className="my-project-description">
                         <h3 className="my-project-name">{project.name}</h3>
@@ -201,20 +239,45 @@ export const MyPage = () => {
                       onClick={() => handleProjectClick(project.id)}
                     >
                       <div className="my-project-card my-project-card-apps">
-                        <div className="my-project-image-wrapper">
+                        <div className="my-project-image-wrapper my-project-image-wrapper-apps">
                           {project.imageUrl ? (
                             <img src={project.imageUrl} alt={project.name} className="my-project-image" />
                           ) : (
                             <div className="my-project-placeholder"></div>
                           )}
                         </div>
-                        {project.hasNewFeedback && (
-                          <div className="my-project-feedback-icon">
-                            <CommentIcon hasNewFeedback={true} width={32} height={32} />
-                          </div>
-                        )}
+                        <div className="my-project-card-overlay">
+                          {selectMode ? (
+                            <div className="my-project-feedback-icon-area">
+                              <div
+                                className={`my-project-resolved-tag-wrapper ${
+                                  project.id === '1' ? '' : 'resolved-tag-hidden'
+                                }`}
+                              >
+                                <ResolvedTag visible={true} />
+                              </div>
+                              <div className="my-project-checkbox-wrapper">
+                                <div
+                                  className={`my-project-checkbox ${
+                                    selectedProjects.includes(project.id) ? 'checked' : ''
+                                  }`}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleProjectSelect(project.id)
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            project.hasNewFeedback && (
+                              <div className="my-project-feedback-icon my-project-feedback-icon-apps">
+                                <CommentIcon hasNewFeedback={true} width={32} height={32} />
+                              </div>
+                            )
+                          )}
+                        </div>
                       </div>
-                      <div className="my-project-description">
+                      <div className="my-project-description my-project-description-apps">
                         <h3 className="my-project-name">{project.name}</h3>
                         {project.subtitle && <p className="my-project-subtitle">{project.subtitle}</p>}
                       </div>
@@ -276,36 +339,34 @@ export const MyPage = () => {
                 ))}
               </div>
             ) : (
-              // Apps 버전: 2행 × 4열
-              Array.from({ length: Math.ceil(feedbackProjects.length / 4) }, (_, rowIndex) => (
-                <div key={rowIndex} className="my-feedback-row my-feedback-row-apps">
-                  {feedbackProjects.slice(rowIndex * 4, rowIndex * 4 + 4).map((project) => (
-                    <div
-                      key={project.id}
-                      className="my-feedback-item my-feedback-item-apps"
-                      onClick={() => navigate(`/projects/${project.id}`)}
-                    >
-                      <div className="my-feedback-card my-feedback-card-apps">
-                        <div className="my-feedback-image-wrapper">
-                          {project.imageUrl ? (
-                            <img
-                              src={project.imageUrl}
-                              alt={project.name}
-                              className="my-feedback-image"
-                            />
-                          ) : (
-                            <div className="my-feedback-placeholder"></div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="my-feedback-description">
-                        <h3 className="my-feedback-name">{project.name}</h3>
-                        {project.subtitle && <p className="my-feedback-subtitle">{project.subtitle}</p>}
+              // Apps 버전: 1행 × 4열
+              <div className="my-feedback-row my-feedback-row-apps">
+                {feedbackProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="my-feedback-item my-feedback-item-apps"
+                    onClick={() => navigate(`/projects/${project.id}`)}
+                  >
+                    <div className="my-feedback-card my-feedback-card-apps">
+                      <div className="my-feedback-image-wrapper my-feedback-image-wrapper-apps">
+                        {project.imageUrl ? (
+                          <img
+                            src={project.imageUrl}
+                            alt={project.name}
+                            className="my-feedback-image"
+                          />
+                        ) : (
+                          <div className="my-feedback-placeholder"></div>
+                        )}
                       </div>
                     </div>
-                  ))}
-                </div>
-              ))
+                    <div className="my-feedback-description my-feedback-description-apps">
+                      <h3 className="my-feedback-name">{project.name}</h3>
+                      {project.subtitle && <p className="my-feedback-subtitle">{project.subtitle}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

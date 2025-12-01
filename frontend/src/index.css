@@ -6,6 +6,8 @@
 @import './styles/my-page.css';
 @import './components/Category/category.css';
 @import './components/ProjectsHeader/projects-header.css';
+@import './components/ResolvedTag/resolved-tag.css';
+@import './pages/registration-page.css';
 
 * {
   margin: 0;

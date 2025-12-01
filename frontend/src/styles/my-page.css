@@ -19,9 +19,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  width: 1512px;
+  width: 100%;
   box-sizing: border-box;
   background: #ffffff;
+}
+
+.my-project-header-app {
+  width: 100%;
 }
 
 .my-project-header-left {
@@ -48,6 +52,12 @@
   gap: 10px;
   align-items: center;
   padding: 0 76px 0 0;
+}
+
+.select-mode-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .btn-select {
@@ -151,9 +161,22 @@
 .my-project-row {
   display: flex;
   align-items: center;
-  width: 1512px;
+  width: 100%;
   padding: 30px 56px;
   box-sizing: border-box;
+  gap: 0;
+}
+
+.my-project-row-apps {
+  padding: 30px 56px;
+  justify-content: space-between;
+  gap: 0;
+  width: 100%;
+}
+
+.my-project-row-apps {
+  padding: 30px 56px;
+  justify-content: space-between;
   gap: 0;
 }
 
@@ -169,6 +192,29 @@
   transition: transform 0.2s;
 }
 
+.my-project-item-apps {
+  flex: 0 0 auto;
+  padding: 20px;
+  gap: 18px;
+}
+
+.my-project-card-apps {
+  width: 310px;
+  height: 533.789px;
+  padding: 6px 5px;
+}
+
+.my-project-image-wrapper-apps {
+  border-radius: 15.064px;
+}
+
+.my-project-feedback-icon-apps {
+  top: 0;
+  left: 0;
+  right: auto;
+}
+
+
 .my-project-item:hover {
   transform: translateY(-4px);
 }
@@ -182,11 +228,92 @@
   height: 533.789px;
   border-radius: 15.064px;
   box-shadow: 0px 4.519px 7.532px 0px rgba(0, 0, 0, 0.12);
-  padding: 5px 5px 6px 6px;
+  padding: 6px 5px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
   background: transparent;
+  box-sizing: border-box;
+}
+
+.my-project-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.my-project-feedback-icon-area {
+  position: absolute;
+  top: 6px;
+  left: 5px;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 0;
+  padding-right: 10px;
+  padding-top: 0;
+  padding-bottom: 0;
+  pointer-events: none;
+  z-index: 20;
+  width: calc(100% - 10px);
+  box-sizing: border-box;
+}
+
+.my-project-checkbox-wrapper {
+  pointer-events: auto;
+  flex-shrink: 0;
+  margin-right: 0;
+}
+
+.my-project-resolved-tag-wrapper {
+  pointer-events: auto;
+  flex-shrink: 0;
+  margin-left: 0;
+}
+
+.my-project-resolved-tag-wrapper.resolved-tag-hidden {
+  opacity: 0;
+}
+
+.my-project-checkbox {
+  width: 32px;
+  height: 32px;
+  border-radius: 5.818px;
+  background: #ffffff;
+  border: 1.455px solid #c3c3c3;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.my-project-checkbox.checked {
+  background: #f5ffe5;
+  border-color: #d5ff92;
+}
+
+.my-project-checkbox.checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 21.818px;
+  height: 21.818px;
+  background-image: url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 11L9 15L17 7' stroke='%2391d100' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.my-project-resolved-tag-wrapper {
+  flex-shrink: 0;
 }
 
 .my-project-image-wrapper {
@@ -217,14 +344,29 @@
 
 .my-project-feedback-icon {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0;
+  left: 0;
   z-index: 10;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
 }
+
+.my-project-feedback-icon-apps {
+  position: absolute;
+  top: 6px;
+  left: 5px;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Select 모드에서 Feedback Icon 영역 스타일 - 중복 제거됨 */
 
 .comment-icon-wrapper {
   display: flex;
@@ -242,6 +384,12 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.my-project-description-apps {
+  gap: 4px;
+  padding-left: 10px;
+  padding-right: 0;
 }
 
 .my-project-name {
@@ -267,7 +415,7 @@
 /* My Feedback Section */
 .my-feedback-section {
   background: #ffffff;
-  width: 1512px;
+  width: 100%;
   box-sizing: border-box;
   margin-top: 0;
 }
@@ -278,6 +426,39 @@
   gap: 11px;
   padding: 20px 0 0 76px;
   align-items: flex-start;
+}
+
+.my-feedback-header-apps {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 0;
+}
+
+.my-feedback-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  align-items: flex-start;
+}
+
+.my-feedback-header-right {
+  padding: 0 76px 0 0;
+}
+
+.btn-add-new-project {
+  width: 182px;
+  height: 37px;
+  background: #9de800;
+  color: #ffffff;
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 500;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
 }
 
 .my-feedback-title {
@@ -450,6 +631,33 @@
   justify-content: space-between;
   width: 1512px;
   box-sizing: border-box;
+}
+
+.my-feedback-row-apps {
+  padding: 30px 20px 30px 56px;
+  gap: 0;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.my-feedback-item-apps {
+  flex: 0 0 auto;
+  padding: 20px;
+  gap: 18px;
+}
+
+.my-feedback-card-apps {
+  width: 310px;
+  height: 533.789px;
+}
+
+.my-feedback-image-wrapper-apps {
+  border-radius: 15.064px;
+}
+
+.my-feedback-description-apps {
+  padding-left: 10px;
 }
 
 .my-feedback-item-web {
