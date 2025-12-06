@@ -158,6 +158,13 @@
   padding: 0;
 }
 
+.designs-section .section-label {
+  font-size: 24px;
+  font-weight: 500;
+  color: #000000;
+  padding: 10px;
+}
+
 .section-value {
   font-family: var(--font-pretendard);
   font-size: 20px;
@@ -234,42 +241,95 @@
 .designs-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 22px;
   width: 305px;
   flex-shrink: 0;
 }
 
-.designs-list {
+.designs-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  width: 201px;
+}
+
+.designs-title {
+  font-family: var(--font-pretendard);
+  font-size: 24px;
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.designs-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.designs-input-wrapper {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
-.design-item {
+.design-input {
   background: #f6f6f6;
   border-radius: 6.968px;
   height: 56px;
   padding: 12px 24px;
-  display: flex;
-  align-items: center;
+  border: none;
   font-family: var(--font-pretendard);
   font-size: 20px;
   font-weight: 400;
   color: #484848;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.design-input::placeholder {
+  color: #c3c3c3;
+}
+
+.design-input:focus {
+  outline: none;
+  background: #ffffff;
+  border: 1px solid #b4fd2c;
+}
+
+.btn-add-design {
+  background: #000000;
+  color: #ffffff;
+  border-radius: 8.4px;
+  height: 49px;
+  padding: 12.6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10.5px;
+  font-family: var(--font-pretendard);
+  font-size: 17.85px;
+  font-weight: 500;
+  line-height: 1.4;
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
+  width: 100%;
+  transition: opacity 0.2s;
 }
 
-.design-item:hover {
-  background: #e6e6e6;
+.btn-add-design:hover {
+  opacity: 0.9;
 }
 
-.design-item.selected {
-  background: #f5ffe5;
-  border: 1px solid #b4fd2c;
-  font-weight: 600;
+.btn-add-design svg {
+  flex-shrink: 0;
+  width: 20.5px;
+  height: 20.5px;
 }
 
 /* Screen/Feedback Section */

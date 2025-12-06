@@ -208,6 +208,65 @@
 }
 
 /* 디자인 목록 */
+.designs-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.design-item-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.design-input {
+  width: 100%;
+  height: 56px;
+  background: #f6f6f6;
+  border: none;
+  border-radius: 6.968px;
+  padding: 12px 24px;
+  padding-right: 50px;
+  text-align: left;
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 100%;
+  color: #484848;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.design-input::placeholder {
+  color: #c3c3c3;
+}
+
+.design-input:focus {
+  outline: none;
+  background: #ffffff;
+  border: 1px solid #b4fd2c;
+}
+
+.design-input.active {
+  background: #f5ffe5;
+  border: 1px solid #b4fd2c;
+  font-weight: 600;
+}
+
+.design-input.editing {
+  background: #ffffff;
+  border: 2px solid #b4fd2c;
+  cursor: text;
+}
+
+.design-input[readonly] {
+  cursor: pointer;
+}
+
 .design-item {
   width: 100%;
   height: 56px;
@@ -215,6 +274,7 @@
   border: none;
   border-radius: 6.968px;
   padding: 12px 24px;
+  padding-right: 50px;
   text-align: left;
   font-family: var(--font-pretendard);
   font-size: 20px;
@@ -250,6 +310,39 @@
   font-weight: 400;
   line-height: 100%;
   color: #484848;
+  padding-right: 50px;
+}
+
+.design-delete-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  z-index: 1;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.design-delete-btn:hover {
+  opacity: 1;
+}
+
+.design-delete-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.design-delete-btn:hover svg path {
+  stroke: #000000;
 }
 
 .add-design-btn {
@@ -363,10 +456,47 @@
   border: 1px solid #e0e0e0;
 }
 
+.uploaded-images-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #c3c3c3 #f0f0f0;
+  position: relative;
+}
+
+.uploaded-images-container::-webkit-scrollbar {
+  height: 8px;
+  display: block;
+}
+
+.uploaded-images-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.uploaded-images-container::-webkit-scrollbar-thumb {
+  background: #c3c3c3;
+  border-radius: 4px;
+}
+
+.uploaded-images-container::-webkit-scrollbar-thumb:hover {
+  background: #a5a5a5;
+}
+
 .uploaded-image-wrapper {
   position: relative;
   width: 100%;
   height: 100%;
+  flex-shrink: 0;
+  flex-grow: 0;
+  min-width: 100%;
+  max-width: 100%;
 }
 
 .uploaded-image {
@@ -380,25 +510,40 @@
   top: 28px;
   right: 47px;
   display: flex;
-  gap: 14px;
+  gap: 16.667px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.uploaded-image-wrapper:hover .image-actions {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .image-action-btn {
-  width: 30px;
-  height: 30px;
-  background: rgba(34, 34, 34, 0.5);
-  backdrop-filter: blur(3.333px);
+  width: 50px;
+  height: 50px;
+  background: transparent;
   border: none;
   border-radius: 6.667px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: opacity 0.2s;
+  pointer-events: auto;
 }
 
 .image-action-btn:hover {
-  background: rgba(34, 34, 34, 0.7);
+  opacity: 0.8;
+}
+
+.image-action-btn svg {
+  width: 50px;
+  height: 50px;
+  display: block;
 }
 
 .image-upload-placeholder {
@@ -492,6 +637,23 @@
 
 .custom-question-delete:hover svg path {
   stroke: #000000;
+}
+
+/* 질문 카테고리 래퍼 */
+.question-category-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-dropdown-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 60px;
+  height: 56px;
+  cursor: pointer;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 /* 질문 리스트 */

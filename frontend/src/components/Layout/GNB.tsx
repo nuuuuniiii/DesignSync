@@ -30,8 +30,8 @@ export const GNB = ({ selectedPlatform = 'web', onPlatformChange }: GNBProps) =>
   }
 
   const handlePlatformClick = (platform: PlatformType) => {
-    if (location.pathname === '/my-page' || location.pathname.startsWith('/projects/')) {
-      // My Page 또는 Project Detail에서 Apps/Webs 클릭 시 Explore 페이지로 이동
+    if (location.pathname === '/my-page' || location.pathname.startsWith('/projects/') || location.pathname === '/registration') {
+      // My Page, Project Detail, 또는 Registration에서 Apps/Webs 클릭 시 Explore 페이지로 이동
       navigate('/explore', { state: { platform } })
     } else {
       // 다른 페이지에서는 기존 동작 유지
@@ -50,19 +50,19 @@ export const GNB = ({ selectedPlatform = 'web', onPlatformChange }: GNBProps) =>
           <div className="gnb-nav-links">
             <button
               onClick={() => handlePlatformClick('web')}
-              className={`nav-link ${location.pathname === '/my-page' ? '' : selectedPlatform === 'web' ? 'active' : ''}`}
+              className={`nav-link ${location.pathname === '/my-page' || location.pathname === '/registration' ? '' : selectedPlatform === 'web' ? 'active' : ''}`}
             >
               Webs
             </button>
             <button
               onClick={() => handlePlatformClick('apps')}
-              className={`nav-link ${location.pathname === '/my-page' ? '' : selectedPlatform === 'apps' ? 'active' : ''}`}
+              className={`nav-link ${location.pathname === '/my-page' || location.pathname === '/registration' ? '' : selectedPlatform === 'apps' ? 'active' : ''}`}
             >
               Apps
             </button>
             <Link
               to="/my-page"
-              className={`nav-link ${location.pathname === '/my-page' ? 'active' : ''}`}
+              className={`nav-link ${location.pathname === '/my-page' || location.pathname === '/registration' ? 'active' : ''}`}
             >
               My Page
             </Link>

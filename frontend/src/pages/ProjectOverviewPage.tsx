@@ -20,7 +20,13 @@ export const ProjectOverviewPage = () => {
   // URL 경로에 따라 app 여부 판단: /web이면 app=false, 아니면 app=true
   const isApp = !location.pathname.includes('/web')
   
-  const [selectedDesign, setSelectedDesign] = useState('Login')
+  const [selectedDesign, setSelectedDesign] = useState<string | null>(null)
+  const [designInputs, setDesignInputs] = useState<string[]>([''])
+  
+  // 페이지 진입 시 디폴트로 Input field 하나만 표시
+  useEffect(() => {
+    setDesignInputs([''])
+  }, [])
 
   // Mock data
   const projectName = 'Toss Redesign Project'
@@ -38,12 +44,8 @@ export const ProjectOverviewPage = () => {
     { id: '6', name: 'Usability', rating: 3.5 },
   ]
 
-  const designs = [
-    { id: '1', name: 'Login' },
-    { id: '2', name: 'Home' },
-    { id: '3', name: 'Explore' },
-    { id: '4', name: 'Image Generation' },
-  ]
+  // 디자인 목록은 항상 빈 배열 (Input field만 표시)
+  const designs: { id: string; name: string }[] = []
 
   const screens = [
     { id: '1', number: 1 },
@@ -83,6 +85,16 @@ export const ProjectOverviewPage = () => {
 
   const handleDesignSelect = (designName: string) => {
     setSelectedDesign(designName)
+  }
+
+  const handleAddDesign = () => {
+    setDesignInputs([...designInputs, ''])
+  }
+
+  const handleDesignInputChange = (index: number, value: string) => {
+    const newInputs = [...designInputs]
+    newInputs[index] = value
+    setDesignInputs(newInputs)
   }
 
   const handleScreenClick = (screenId: string) => {
@@ -166,17 +178,26 @@ export const ProjectOverviewPage = () => {
             <div className="project-contents">
               {/* Designs Section */}
               <div className="designs-section">
-                <p className="section-label">Designs</p>
-                <div className="designs-list">
-                  {designs.map((design) => (
-                    <button
-                      key={design.id}
-                      className={`design-item ${selectedDesign === design.name ? 'selected' : ''}`}
-                      onClick={() => handleDesignSelect(design.name)}
-                    >
-                      {design.name}
-                    </button>
-                  ))}
+                <div className="designs-header">
+                  <p className="designs-title">Your Designs</p>
+                </div>
+                <div className="designs-content">
+                  <div className="designs-input-wrapper">
+                    <input
+                      type="text"
+                      className="design-input"
+                      placeholder="What is your Screen name?"
+                      value={designInputs[0] || ''}
+                      onChange={(e) => handleDesignInputChange(0, e.target.value)}
+                    />
+                  </div>
+                  <button className="btn-add-design" onClick={handleAddDesign}>
+                    <svg width="21" height="21" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="9" cy="9" r="8.5" stroke="white" strokeWidth="1" />
+                      <path d="M9 5V13M5 9H13" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    화면 추가
+                  </button>
                 </div>
               </div>
 
