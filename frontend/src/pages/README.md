@@ -32,11 +32,6 @@ Figma 디자인과 PRD를 기반으로 구현된 페이지 컴포넌트들입니
 ### 5. NewFeedbackRatingPage (`/projects/:id/feedback/rating`)
 - 별점 슬라이더 (1-5점) - 피드백 타입별로
 
-### 6. NewFeedbackScreenPage (`/projects/:id/feedback/screen`)
-- Design 선택
-- Screen 선택 (Design에 종속)
-- 선택한 Screen의 피드백 질문에 대한 텍스트 입력
-
 ## 라우팅 구조
 
 ```
@@ -47,7 +42,6 @@ Figma 디자인과 PRD를 기반으로 구현된 페이지 컴포넌트들입니
 /projects/:id → ProjectOverviewPage
 /projects/:id/edit → ProjectRegisterPage
 /projects/:id/feedback/rating → NewFeedbackRatingPage
-/projects/:id/feedback/screen → NewFeedbackScreenPage
 ```
 
 ## Mock 데이터

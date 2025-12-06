@@ -75,6 +75,12 @@ export const NewFeedbackRatingPage = () => {
   }
 
   const handleNext = () => {
+    console.log('Next button clicked, projectId:', projectId)
+    if (!projectId) {
+      console.error('Project ID is missing')
+      return
+    }
+    console.log('Navigating to screen page with projectId:', projectId)
     navigate(`/projects/${projectId}/feedback/screen`, { state: { ratings } })
   }
 
