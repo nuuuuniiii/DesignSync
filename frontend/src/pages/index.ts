@@ -5,4 +5,5 @@ export { NewFeedbackRatingPage } from './NewFeedbackRatingPage'
 export { NewFeedbackScreenPage } from './NewFeedbackScreenPage'
 export { RegistrationPage } from './RegistrationPage'
 export { MyProjectDetailPage } from './MyProjectDetailPage'
+export { ProjectOverviewPage } from './ProjectOverviewPage'
 

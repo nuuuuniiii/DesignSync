@@ -7,6 +7,7 @@ import {
   NewFeedbackScreenPage,
   RegistrationPage,
   MyProjectDetailPage,
+  ProjectOverviewPage,
 } from './pages'
 
 function App() {
@@ -18,6 +19,8 @@ function App() {
         <Route path="/my-page" element={<MyPage />} />
         <Route path="/my-projects/:projectId" element={<MyProjectDetailPage />} />
         <Route path="/my-projects/:projectId/web" element={<MyProjectDetailPage />} />
+        <Route path="/projects/:projectId" element={<ProjectOverviewPage />} />
+        <Route path="/projects/:projectId/web" element={<ProjectOverviewPage />} />
         <Route path="/projects/new" element={<ProjectRegisterPage />} />
         <Route path="/projects/:projectId/edit" element={<ProjectRegisterPage />} />
         <Route
