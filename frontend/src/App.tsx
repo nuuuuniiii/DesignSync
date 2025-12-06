@@ -3,7 +3,6 @@ import {
   ExplorePage,
   MyPage,
   ProjectRegisterPage,
-  ProjectOverviewPage,
   NewFeedbackRatingPage,
   NewFeedbackScreenPage,
   RegistrationPage,
@@ -20,8 +19,6 @@ function App() {
         <Route path="/my-projects/:projectId" element={<MyProjectDetailPage />} />
         <Route path="/my-projects/:projectId/web" element={<MyProjectDetailPage />} />
         <Route path="/projects/new" element={<ProjectRegisterPage />} />
-        <Route path="/projects/:projectId" element={<ProjectOverviewPage />} />
-        <Route path="/projects/:projectId/web" element={<ProjectOverviewPage />} />
         <Route path="/projects/:projectId/edit" element={<ProjectRegisterPage />} />
         <Route
           path="/projects/:projectId/feedback/rating"
