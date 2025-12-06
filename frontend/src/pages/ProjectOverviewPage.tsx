@@ -29,6 +29,10 @@ export const ProjectOverviewPage = () => {
   const description = 'Streamlining key tasks to reduce friction and make financial actions faster and more intuitive.'
   const category = 'E-Commerce'
 
+  // ============================================================================
+  // 🔒 RATING SECTION - DO NOT MODIFY 🔒
+  // 이 부분은 절대 수정하지 마세요. Project Detail 화면의 Rating 부분입니다.
+  // ============================================================================
   const ratingTypes = [
     { id: '1', name: 'User Flow', rating: 4 },
     { id: '2', name: 'Interaction Design', rating: 3.5 },
@@ -37,6 +41,7 @@ export const ProjectOverviewPage = () => {
     { id: '5', name: 'Information Architecture', rating: 3.5 },
     { id: '6', name: 'Usability', rating: 3.5 },
   ]
+  // ============================================================================
 
   const designs = [
     { id: '1', name: 'Login' },
@@ -78,7 +83,7 @@ export const ProjectOverviewPage = () => {
   ]
 
   const handleNewFeedback = () => {
-    navigate(`/projects/${projectId}/feedback/screen`)
+    navigate(`/projects/${projectId}/feedback/rating`)
   }
 
   const handleDesignSelect = (designName: string) => {
@@ -97,8 +102,12 @@ export const ProjectOverviewPage = () => {
     console.log(action, feedbackId)
   }
 
+  // ============================================================================
+  // 🔒 RATING SECTION - DO NOT MODIFY 🔒
+  // ============================================================================
   const leftRatings = ratingTypes.slice(0, 3)
   const rightRatings = ratingTypes.slice(3, 6)
+  // ============================================================================
 
   return (
     <div className="project-detail-page">
@@ -136,6 +145,10 @@ export const ProjectOverviewPage = () => {
               <p className="section-value">{category}</p>
             </div>
 
+            {/* ================================================================== */}
+            {/* 🔒 RATING SECTION - DO NOT MODIFY 🔒                            */}
+            {/* 이 부분은 절대 수정하지 마세요. Project Detail 화면의 Rating 부분입니다. */}
+            {/* ================================================================== */}
             <div className="rating-section">
               <p className="section-label">Rating</p>
               <div className="ratings-container">
@@ -157,6 +170,7 @@ export const ProjectOverviewPage = () => {
                 </div>
               </div>
             </div>
+            {/* ================================================================== */}
           </div>
 
           {/* Project Contents Section */}

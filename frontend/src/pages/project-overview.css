@@ -170,6 +170,10 @@
   padding: 0;
 }
 
+/* ============================================================================ */
+/* 🔒 RATING SECTION - DO NOT MODIFY 🔒                                        */
+/* 이 부분은 절대 수정하지 마세요. Project Detail 화면의 Rating 부분입니다.      */
+/* ============================================================================ */
 .rating-section {
   display: flex;
   flex-direction: column;
@@ -178,21 +182,38 @@
 
 .ratings-container {
   display: flex;
-  gap: 75px;
   align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .ratings-column {
   display: flex;
   flex-direction: column;
-  gap: 14px;
   width: 287px;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.ratings-column:first-child {
+  margin-right: 75px;
+}
+
+.ratings-column:last-child {
+  margin-left: 0;
 }
 
 .rating-item {
   display: flex;
   gap: 10px;
   align-items: center;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 14px;
+}
+
+.rating-item:last-child {
+  margin-bottom: 0;
 }
 
 .rating-theme {
@@ -210,6 +231,7 @@
   color: #ffffff;
   white-space: nowrap;
 }
+/* ============================================================================ */
 
 /* Project Contents Section */
 .project-contents-section {
