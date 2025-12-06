@@ -1,13 +1,13 @@
-/* Project Detail Page Styles */
+/* My Project Detail Page Styles */
 
-.project-detail-page {
+.my-project-detail-page {
   background: #ffffff;
   min-height: 100vh;
   width: 100%;
 }
 
 /* Project Detail Header */
-.project-detail-header {
+.my-project-detail-header {
   background: #ffffff;
   padding: 50px 70px 0 70px;
   display: flex;
@@ -15,20 +15,20 @@
   gap: 16px;
 }
 
-.project-header-top {
+.my-project-header-top {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
 }
 
-.project-info {
+.my-project-info {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.project-creator {
+.my-project-creator {
   font-family: var(--font-pretendard);
   font-size: 16px;
   font-weight: 500;
@@ -38,7 +38,7 @@
   line-height: normal;
 }
 
-.project-title {
+.my-project-title {
   font-family: var(--font-pretendard);
   font-size: 40px;
   font-weight: 500;
@@ -48,40 +48,13 @@
   padding: 0;
 }
 
-.btn-add-feedback {
-  background: #000000;
-  color: #ffffff;
-  border-radius: 10px;
-  padding: 10px;
-  height: 38px;
-  width: 193px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: var(--font-pretendard);
-  font-size: 20px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-add-feedback:hover {
-  opacity: 0.9;
-}
-
-.plus-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-
-.project-header-bottom {
+.my-project-header-bottom {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-.platform-category-field {
+.my-project-platform-category-field {
   background: #f6f6f6;
   border-radius: 6.968px;
   height: 56px;
@@ -93,7 +66,7 @@
   flex: 1;
 }
 
-.platform-tag {
+.my-project-platform-tag {
   background: #f5ffe5;
   border-radius: 100px;
   height: 28px;
@@ -109,7 +82,7 @@
   flex-shrink: 0;
 }
 
-.category-text {
+.my-project-category-text {
   font-family: var(--font-pretendard);
   font-size: 20px;
   font-weight: 400;
@@ -123,14 +96,14 @@
 }
 
 /* Whole Section */
-.whole-section {
+.my-project-whole-section {
   background: #ffffff;
   padding: 30px 76px 50px 76px;
   width: 100%;
   box-sizing: border-box;
 }
 
-.whole-section-content {
+.my-project-whole-section-content {
   display: flex;
   flex-direction: column;
   gap: 31px;
@@ -138,7 +111,7 @@
 }
 
 /* Category and Rating Wrapper */
-.category-rating-wrapper {
+.my-project-category-rating-wrapper {
   display: flex;
   flex-direction: column;
   gap: 27px;
@@ -146,13 +119,13 @@
   flex-shrink: 0;
 }
 
-.category-section {
+.my-project-category-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.section-label {
+.my-project-section-label {
   font-family: var(--font-pretendard);
   font-size: 18px;
   font-weight: 500;
@@ -161,7 +134,7 @@
   padding: 0;
 }
 
-.section-value {
+.my-project-section-value {
   font-family: var(--font-pretendard);
   font-size: 20px;
   font-weight: 600;
@@ -170,32 +143,32 @@
   padding: 0;
 }
 
-.rating-section {
+.my-project-rating-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.ratings-container {
+.my-project-ratings-container {
   display: flex;
   gap: 75px;
   align-items: flex-start;
 }
 
-.ratings-column {
+.my-project-ratings-column {
   display: flex;
   flex-direction: column;
   gap: 14px;
   width: 287px;
 }
 
-.rating-item {
+.my-project-rating-item {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-.rating-theme {
+.my-project-rating-theme {
   background: #a5a5a5;
   border-radius: 100px;
   height: 28px;
@@ -212,20 +185,20 @@
 }
 
 /* Project Contents Section */
-.project-contents-section {
+.my-project-contents-section {
   display: flex;
   flex-direction: column;
   gap: 24px;
   width: 100%;
 }
 
-.section-divider {
+.my-project-section-divider {
   height: 1px;
   background: #e6e6e6;
   width: 100%;
 }
 
-.project-contents {
+.my-project-contents {
   display: flex;
   gap: 57px;
   align-items: flex-start;
@@ -233,7 +206,7 @@
 }
 
 /* Designs Section */
-.designs-section {
+.my-project-designs-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -241,13 +214,13 @@
   flex-shrink: 0;
 }
 
-.designs-list {
+.my-project-designs-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.design-item {
+.my-project-design-item {
   background: #f6f6f6;
   border-radius: 6.968px;
   height: 56px;
@@ -264,18 +237,18 @@
   text-align: left;
 }
 
-.design-item:hover {
+.my-project-design-item:hover {
   background: #e6e6e6;
 }
 
-.design-item.selected {
+.my-project-design-item.selected {
   background: #f5ffe5;
   border: 1px solid #b4fd2c;
   font-weight: 600;
 }
 
 /* Screen/Feedback Section */
-.screen-feedback-section {
+.my-project-screen-feedback-section {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -286,13 +259,13 @@
 }
 
 /* Screens Container */
-.screens-container {
+.my-project-screens-container {
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-.screens-app {
+.my-project-screens-app {
   gap: 34px;
   padding: 33px 0;
   overflow-x: auto;
@@ -302,24 +275,24 @@
   scrollbar-color: #c3c3c3 transparent;
 }
 
-.screens-app::-webkit-scrollbar {
+.my-project-screens-app::-webkit-scrollbar {
   height: 8px;
 }
 
-.screens-app::-webkit-scrollbar-track {
+.my-project-screens-app::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.screens-app::-webkit-scrollbar-thumb {
+.my-project-screens-app::-webkit-scrollbar-thumb {
   background: #c3c3c3;
   border-radius: 4px;
 }
 
-.screens-app::-webkit-scrollbar-thumb:hover {
+.my-project-screens-app::-webkit-scrollbar-thumb:hover {
   background: #a5a5a5;
 }
 
-.screens-web {
+.my-project-screens-web {
   display: flex;
   gap: 49px;
   align-items: center;
@@ -333,34 +306,34 @@
   scrollbar-color: #c3c3c3 transparent;
 }
 
-.screens-web::-webkit-scrollbar {
+.my-project-screens-web::-webkit-scrollbar {
   height: 8px;
 }
 
-.screens-web::-webkit-scrollbar-track {
+.my-project-screens-web::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.screens-web::-webkit-scrollbar-thumb {
+.my-project-screens-web::-webkit-scrollbar-thumb {
   background: #c3c3c3;
   border-radius: 4px;
 }
 
-.screens-web::-webkit-scrollbar-thumb:hover {
+.my-project-screens-web::-webkit-scrollbar-thumb:hover {
   background: #a5a5a5;
 }
 
-.screen-card {
+.my-project-screen-card {
   position: relative;
   cursor: pointer;
   transition: transform 0.2s;
 }
 
-.screen-card:hover {
+.my-project-screen-card:hover {
   transform: translateY(-4px);
 }
 
-.screen-card-app {
+.my-project-screen-card-app {
   width: 310px;
   height: 533.789px;
   border-radius: 15.064px;
@@ -370,7 +343,7 @@
   flex-shrink: 0;
 }
 
-.screen-card-web {
+.my-project-screen-card-web {
   width: 440px;
   height: 273px;
   border-radius: 15.064px;
@@ -385,7 +358,7 @@
   align-items: flex-start;
 }
 
-.screen-image-wrapper {
+.my-project-screen-image-wrapper {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -396,7 +369,7 @@
   z-index: 0;
 }
 
-.screen-placeholder {
+.my-project-screen-placeholder {
   width: 100%;
   height: 100%;
   background-image:
@@ -406,7 +379,7 @@
   background-size: 20px 20px;
 }
 
-.screen-badge-wrapper {
+.my-project-screen-badge-wrapper {
   position: relative;
   display: flex;
   gap: 10px;
@@ -418,7 +391,7 @@
   box-sizing: border-box;
 }
 
-.screen-number-badge {
+.my-project-screen-number-badge {
   width: 26px;
   height: 26px;
   background: #ffffff;
@@ -434,20 +407,20 @@
 }
 
 /* app=on일 때: 절대 위치로 배치 */
-.screen-card-app .screen-number-badge {
+.my-project-screen-card-app .my-project-screen-number-badge {
   position: absolute;
   top: 6px;
   left: 5px;
 }
 
 /* app=off일 때: screen-badge-wrapper 안에서 상대 위치로 배치 */
-.screen-card-web .screen-badge-wrapper .screen-number-badge {
+.my-project-screen-card-web .my-project-screen-badge-wrapper .my-project-screen-number-badge {
   position: relative;
   top: auto;
   left: auto;
 }
 
-.screen-number-badge span {
+.my-project-screen-number-badge span {
   font-family: var(--font-pretendard);
   font-size: 18px;
   font-weight: 600;
@@ -455,14 +428,14 @@
 }
 
 /* Feedbacks Section */
-.feedbacks-section {
+.my-project-feedbacks-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 100%;
 }
 
-.feedbacks-list {
+.my-project-feedbacks-list {
   display: flex;
   flex-direction: column;
   gap: 35px;

@@ -63,9 +63,9 @@ export const MyPage = () => {
       handleProjectSelect(projectId)
     } else {
       if (myProjectPlatform === 'apps') {
-        navigate(`/projects/${projectId}`)
+        navigate(`/my-projects/${projectId}`)
       } else {
-        navigate(`/projects/${projectId}/web`)
+        navigate(`/my-projects/${projectId}/web`)
       }
     }
   }

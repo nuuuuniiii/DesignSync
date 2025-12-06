@@ -4,11 +4,10 @@ import {
   MyPage,
   ProjectRegisterPage,
   ProjectOverviewPage,
-  ProjectOverviewAppPage,
-  ProjectOverviewWebPage,
   NewFeedbackRatingPage,
   NewFeedbackScreenPage,
   RegistrationPage,
+  MyProjectDetailPage,
 } from './pages'
 
 function App() {
@@ -18,6 +17,8 @@ function App() {
         <Route path="/" element={<Navigate to="/explore" replace />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/my-page" element={<MyPage />} />
+        <Route path="/my-projects/:projectId" element={<MyProjectDetailPage />} />
+        <Route path="/my-projects/:projectId/web" element={<MyProjectDetailPage />} />
         <Route path="/projects/new" element={<ProjectRegisterPage />} />
         <Route path="/projects/:projectId" element={<ProjectOverviewPage />} />
         <Route path="/projects/:projectId/web" element={<ProjectOverviewPage />} />

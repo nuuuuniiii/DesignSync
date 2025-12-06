@@ -73,13 +73,12 @@ export const ExplorePage = () => {
   })
 
   const handleProjectClick = (projectId: string) => {
-    // Apps 플랫폼일 때는 ProjectOverviewAppPage로 이동
-    // Apps 화면에서 카드를 클릭하면 항상 ProjectOverviewAppPage로 이동
+    // Apps 플랫폼일 때는 ProjectOverviewAppPage로 이동 (app=on)
     if (platform === 'apps') {
       navigate(`/projects/${projectId}`)
     } else {
-      // Web 플랫폼일 때는 ProjectOverviewWebPage로 이동
-      navigate(`/projects/${projectId}/web`)
+      // Web 플랫폼일 때는 /web 경로로 이동하여 app=off로 표시
+      navigate(`/projects/${projectId}/web`, { replace: false })
     }
   }
 

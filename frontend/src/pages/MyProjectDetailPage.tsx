@@ -3,29 +3,28 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { GNB } from '@/components/Layout/GNB'
 import { StarRating } from '@/components/StarRating/StarRating'
 import { FeedbackItem } from '@/components/FeedbackItem/FeedbackItem'
-import './project-overview.css'
+import './my-project-detail.css'
 
 /**
- * Project Detail 화면
+ * My Project Detail 화면
  *
  * Figma 디자인:
- * - https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-9937&m=dev
+ * - https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=99-10713&m=dev
  */
-export const ProjectOverviewPage = () => {
+export const MyProjectDetailPage = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
   const location = useLocation()
   
   // URL 경로에 따라 app 여부 판단: /web이면 app=false (app=off), 아니면 app=true (app=on)
-  // Explore Web에서 카드 클릭 시 /projects/:projectId/web 경로로 이동하므로 isApp = false
-  // Explore App에서 카드 클릭 시 /projects/:projectId 경로로 이동하므로 isApp = true
+  // My Project Web에서 카드 클릭 시 /my-projects/:projectId/web 경로로 이동하므로 isApp = false
+  // My Project App에서 카드 클릭 시 /my-projects/:projectId 경로로 이동하므로 isApp = true
   const isApp = !location.pathname.includes('/web')
   
   const [selectedDesign, setSelectedDesign] = useState('Login')
 
   // Mock data
   const projectName = 'Toss Redesign Project'
-  const creator = 'J**** | 토스 2년차'
   const description = 'Streamlining key tasks to reduce friction and make financial actions faster and more intuitive.'
   const category = 'E-Commerce'
 
@@ -77,10 +76,6 @@ export const ProjectOverviewPage = () => {
     },
   ]
 
-  const handleNewFeedback = () => {
-    navigate(`/projects/${projectId}/feedback/screen`)
-  }
-
   const handleDesignSelect = (designName: string) => {
     setSelectedDesign(designName)
   }
@@ -101,56 +96,50 @@ export const ProjectOverviewPage = () => {
   const rightRatings = ratingTypes.slice(3, 6)
 
   return (
-    <div className="project-detail-page">
+    <div className="my-project-detail-page">
       <GNB selectedPlatform={isApp ? 'apps' : 'web'} />
       
       {/* Project Detail Header */}
-      <div className="project-detail-header">
-        <div className="project-header-top">
-          <div className="project-info">
-            <p className="project-creator">{creator}</p>
-            <h1 className="project-title">{projectName}</h1>
+      <div className="my-project-detail-header">
+        <div className="my-project-header-top">
+          <div className="my-project-info">
+            <p className="my-project-creator">My project</p>
+            <h1 className="my-project-title">{projectName}</h1>
           </div>
-          <button onClick={handleNewFeedback} className="btn-add-feedback">
-            <span className="plus-icon">+</span>
-            Add Feedback
-          </button>
         </div>
-        <div className="project-header-bottom">
-          <div className="platform-category-field">
-            <div className="platform-tag">{isApp ? 'App' : 'Web'}</div>
-            <p className="category-text">
-              Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/Select/
-            </p>
+        <div className="my-project-header-bottom">
+          <div className="my-project-platform-category-field">
+            <div className="my-project-platform-tag">{isApp ? 'App' : 'Web'}</div>
+            <p className="my-project-category-text">{description}</p>
           </div>
         </div>
       </div>
 
       {/* Whole Section */}
-      <div className="whole-section">
-        <div className="whole-section-content">
+      <div className="my-project-whole-section">
+        <div className="my-project-whole-section-content">
           {/* Category and Rating Section */}
-          <div className="category-rating-wrapper">
-            <div className="category-section">
-              <p className="section-label">Category</p>
-              <p className="section-value">{category}</p>
+          <div className="my-project-category-rating-wrapper">
+            <div className="my-project-category-section">
+              <p className="my-project-section-label">Category</p>
+              <p className="my-project-section-value">{category}</p>
             </div>
 
-            <div className="rating-section">
-              <p className="section-label">Rating</p>
-              <div className="ratings-container">
-                <div className="ratings-column">
+            <div className="my-project-rating-section">
+              <p className="my-project-section-label">Rating</p>
+              <div className="my-project-ratings-container">
+                <div className="my-project-ratings-column">
                   {leftRatings.map((rating) => (
-                    <div key={rating.id} className="rating-item">
-                      <div className="rating-theme">{rating.name}</div>
+                    <div key={rating.id} className="my-project-rating-item">
+                      <div className="my-project-rating-theme">{rating.name}</div>
                       <StarRating rating={rating.rating} maxRating={5} size={17} readOnly />
                     </div>
                   ))}
                 </div>
-                <div className="ratings-column">
+                <div className="my-project-ratings-column">
                   {rightRatings.map((rating) => (
-                    <div key={rating.id} className="rating-item">
-                      <div className="rating-theme">{rating.name}</div>
+                    <div key={rating.id} className="my-project-rating-item">
+                      <div className="my-project-rating-theme">{rating.name}</div>
                       <StarRating rating={rating.rating} maxRating={5} size={17} readOnly />
                     </div>
                   ))}
@@ -160,18 +149,18 @@ export const ProjectOverviewPage = () => {
           </div>
 
           {/* Project Contents Section */}
-          <div className="project-contents-section">
-            <div className="section-divider"></div>
+          <div className="my-project-contents-section">
+            <div className="my-project-section-divider"></div>
 
-            <div className="project-contents">
+            <div className="my-project-contents">
               {/* Designs Section */}
-              <div className="designs-section">
-                <p className="section-label">Designs</p>
-                <div className="designs-list">
+              <div className="my-project-designs-section">
+                <p className="my-project-section-label">Designs</p>
+                <div className="my-project-designs-list">
                   {designs.map((design) => (
                     <button
                       key={design.id}
-                      className={`design-item ${selectedDesign === design.name ? 'selected' : ''}`}
+                      className={`my-project-design-item ${selectedDesign === design.name ? 'selected' : ''}`}
                       onClick={() => handleDesignSelect(design.name)}
                     >
                       {design.name}
@@ -181,27 +170,27 @@ export const ProjectOverviewPage = () => {
               </div>
 
               {/* Screen/Feedback Section */}
-              <div className="screen-feedback-section">
+              <div className="my-project-screen-feedback-section">
                 {/* Screen Images Section */}
-                <div className={`screens-container ${isApp ? 'screens-app' : 'screens-web'}`}>
+                <div className={`my-project-screens-container ${isApp ? 'my-project-screens-app' : 'my-project-screens-web'}`}>
                   {screens.map((screen) => (
                     <div
                       key={screen.id}
-                      className={`screen-card ${isApp ? 'screen-card-app' : 'screen-card-web'}`}
+                      className={`my-project-screen-card ${isApp ? 'my-project-screen-card-app' : 'my-project-screen-card-web'}`}
                       onClick={() => handleScreenClick(screen.id)}
                     >
-                      <div className="screen-image-wrapper">
-                        <div className="screen-placeholder"></div>
+                      <div className="my-project-screen-image-wrapper">
+                        <div className="my-project-screen-placeholder"></div>
                       </div>
                       {!isApp && (
-                        <div className="screen-badge-wrapper">
-                          <div className="screen-number-badge">
+                        <div className="my-project-screen-badge-wrapper">
+                          <div className="my-project-screen-number-badge">
                             <span>{screen.number}</span>
                           </div>
                         </div>
                       )}
                       {isApp && (
-                        <div className="screen-number-badge">
+                        <div className="my-project-screen-number-badge">
                           <span>{screen.number}</span>
                         </div>
                       )}
@@ -210,9 +199,9 @@ export const ProjectOverviewPage = () => {
                 </div>
 
                 {/* Feedbacks Section */}
-                <div className="feedbacks-section">
-                  <p className="section-label">Feedbacks</p>
-                  <div className="feedbacks-list">
+                <div className="my-project-feedbacks-section">
+                  <p className="my-project-section-label">Feedbacks</p>
+                  <div className="my-project-feedbacks-list">
                     {questions.map((question) => (
                       <FeedbackItem
                         key={question.id}
