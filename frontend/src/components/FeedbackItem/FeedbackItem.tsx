@@ -67,55 +67,59 @@ export const FeedbackItem = ({
       </div>
 
       {feedbacks.map((feedback) => (
-        <div key={feedback.id} className="feedback-answer">
-          <div className="feedback-answer-content">
-            <div className="screen-number-wrapper">
-              <div className="screen-number-badge">{feedback.screenNumber}</div>
-            </div>
-            <div className="feedback-text">
-              <p className="feedback-author">{feedback.author}</p>
-              <div className="feedback-content">
-                {feedback.content.split('\n').map((line, index) => (
-                  <p key={index}>{line}</p>
-                ))}
+        <div key={feedback.id} className="feedback-answer-wrapper">
+          <div className="feedback-answer">
+            <div className="feedback-answer-content">
+              <div className="screen-number-wrapper">
+                <div className="screen-number-badge">{feedback.screenNumber}</div>
+              </div>
+              <div className="feedback-text">
+                <p className="feedback-author">{feedback.author}</p>
+                <div className="feedback-content">
+                  {feedback.content.split('\n').map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="feedback-menu-wrapper">
-            <button
-              className="menu-button"
-              onClick={() => handleMenuClick(feedback.id)}
-            >
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="8" r="2" fill="#000000" />
-                <circle cx="16" cy="16" r="2" fill="#000000" />
-                <circle cx="16" cy="24" r="2" fill="#000000" />
-              </svg>
-            </button>
-            {openTooltipId === feedback.id && (
-              <div
-                ref={(el) => (tooltipRefs.current[feedback.id] = el)}
-                className="tooltip-menu feedback-tooltip"
+            <div className="feedback-menu-wrapper">
+              <button
+                className="menu-button"
+                onClick={() => handleMenuClick(feedback.id)}
               >
-                {feedback.isMyComment ? (
-                  <>
-                    <button onClick={() => handleTooltipAction('delete', feedback.id)}>
-                      삭제하기
-                    </button>
-                    <button onClick={() => handleTooltipAction('edit', feedback.id)}>
-                      수정하기
-                    </button>
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="16" cy="8" r="2" fill="#000000" />
+                  <circle cx="16" cy="16" r="2" fill="#000000" />
+                  <circle cx="16" cy="24" r="2" fill="#000000" />
+                </svg>
+              </button>
+              {openTooltipId === feedback.id && (
+                <div
+                  ref={(el) => (tooltipRefs.current[feedback.id] = el)}
+                  className="tooltip-menu feedback-tooltip"
+                >
+                  {feedback.isMyComment ? (
+                    <>
+                      <button onClick={() => handleTooltipAction('delete', feedback.id)}>
+                        삭제하기
+                      </button>
+                      <div className="tooltip-divider"></div>
+                      <button onClick={() => handleTooltipAction('edit', feedback.id)}>
+                        수정하기
+                      </button>
+                      <div className="tooltip-divider"></div>
+                      <button onClick={() => handleTooltipAction('report', feedback.id)}>
+                        신고하기
+                      </button>
+                    </>
+                  ) : (
                     <button onClick={() => handleTooltipAction('report', feedback.id)}>
                       신고하기
                     </button>
-                  </>
-                ) : (
-                  <button onClick={() => handleTooltipAction('report', feedback.id)}>
-                    신고하기
-                  </button>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ))}

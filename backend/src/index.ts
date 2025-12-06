@@ -29,8 +29,22 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   res.status(500).json({ error: 'Internal server error' })
 })
 
-// Start server
-app.listen(PORT, () => {
-  logger.info(`Server is running on port ${PORT}`)
-})
+// Start server with port fallback
+const startServer = (port: number) => {
+  const server = app.listen(port, () => {
+    logger.info(`Server is running on port ${port}`)
+  })
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      logger.warn(`Port ${port} is in use, trying another one...`)
+      startServer(port + 1)
+    } else {
+      logger.error(`Server error: ${err.message}`, { stack: err.stack })
+      throw err
+    }
+  })
+}
+
+startServer(Number(PORT))
 

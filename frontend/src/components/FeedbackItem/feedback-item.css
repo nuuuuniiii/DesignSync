@@ -33,7 +33,7 @@
   font-family: var(--font-pretendard);
   font-size: 18px;
   font-weight: 600;
-  color: #b4fd2c;
+  color: #91d100;
   flex-shrink: 0;
 }
 
@@ -59,6 +59,11 @@
   position: relative;
 }
 
+.feedback-answer-wrapper {
+  position: relative;
+  width: 998px;
+}
+
 .feedback-answer {
   background: #f6f6f6;
   border-radius: 7px;
@@ -68,7 +73,7 @@
   justify-content: space-between;
   position: relative;
   min-height: 88px;
-  width: 998px;
+  width: 100%;
 }
 
 .feedback-answer-content {
@@ -179,6 +184,13 @@
 
 .tooltip-menu button:hover {
   background: #d5d5d5;
+}
+
+.tooltip-divider {
+  height: 1px;
+  background: #f6f6f6;
+  width: 100%;
+  margin: 0;
 }
 
 .tooltip-menu::before {

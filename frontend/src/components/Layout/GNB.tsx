@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { SearchIcon } from '@/components/Icon/SearchIcon'
 
@@ -21,11 +21,22 @@ interface GNBProps {
  */
 export const GNB = ({ selectedPlatform = 'web', onPlatformChange }: GNBProps) => {
   const location = useLocation()
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleSearch = (query: string) => {
     // TODO: 검색 기능 구현
     console.log('Search:', query)
+  }
+
+  const handlePlatformClick = (platform: PlatformType) => {
+    if (location.pathname === '/my-page' || location.pathname.startsWith('/projects/')) {
+      // My Page 또는 Project Detail에서 Apps/Webs 클릭 시 Explore 페이지로 이동
+      navigate('/explore', { state: { platform } })
+    } else {
+      // 다른 페이지에서는 기존 동작 유지
+      onPlatformChange?.(platform)
+    }
   }
 
   return (
@@ -38,14 +49,14 @@ export const GNB = ({ selectedPlatform = 'web', onPlatformChange }: GNBProps) =>
           </Link>
           <div className="gnb-nav-links">
             <button
-              onClick={() => onPlatformChange?.('web')}
-              className={`nav-link ${selectedPlatform === 'web' ? 'active' : ''}`}
+              onClick={() => handlePlatformClick('web')}
+              className={`nav-link ${location.pathname === '/my-page' ? '' : selectedPlatform === 'web' ? 'active' : ''}`}
             >
               Webs
             </button>
             <button
-              onClick={() => onPlatformChange?.('apps')}
-              className={`nav-link ${selectedPlatform === 'apps' ? 'active' : ''}`}
+              onClick={() => handlePlatformClick('apps')}
+              className={`nav-link ${location.pathname === '/my-page' ? '' : selectedPlatform === 'apps' ? 'active' : ''}`}
             >
               Apps
             </button>

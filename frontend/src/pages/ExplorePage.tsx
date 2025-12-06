@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Layout } from '@/components/Layout/Layout'
 import { ProjectCard } from '@/components/ProjectCard/ProjectCard'
 import { Button } from '@/components/Button/Button'
@@ -26,9 +26,17 @@ interface Project {
  */
 export const ExplorePage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [platform, setPlatform] = useState<PlatformType>('web')
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
   const [selectedStatus, setSelectedStatus] = useState<ProjectStatus>('unresolved')
+
+  // My Page에서 넘어올 때 플랫폼 설정
+  useEffect(() => {
+    if (location.state?.platform) {
+      setPlatform(location.state.platform)
+    }
+  }, [location.state])
 
   // Figma 디자인에 맞춘 카테고리 목록
   const categories = [
@@ -96,7 +104,7 @@ export const ExplorePage = () => {
             {platform === 'apps' ? (
               <div className="my-project-header-app">
                 <div className="my-project-header-app-left">
-                  <h2 className="my-project-title">My Project</h2>
+                  <h2 className="my-project-title">Projects</h2>
                   <div className="my-project-platform-filters">
                     <button
                       onClick={() => setSelectedStatus('unresolved')}

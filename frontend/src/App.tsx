@@ -20,8 +20,7 @@ function App() {
         <Route path="/my-page" element={<MyPage />} />
         <Route path="/projects/new" element={<ProjectRegisterPage />} />
         <Route path="/projects/:projectId" element={<ProjectOverviewPage />} />
-        <Route path="/projects/:projectId/app" element={<ProjectOverviewAppPage />} />
-        <Route path="/projects/:projectId/web" element={<ProjectOverviewWebPage />} />
+        <Route path="/projects/:projectId/web" element={<ProjectOverviewPage />} />
         <Route path="/projects/:projectId/edit" element={<ProjectRegisterPage />} />
         <Route
           path="/projects/:projectId/feedback/rating"

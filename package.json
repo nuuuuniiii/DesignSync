@@ -5,14 +5,14 @@
   "description": "DesignSync - 디자이너를 위한 피드백 수집 플랫폼",
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "cd /Users/aekyo/DesignSync/frontend && npm run dev",
-    "dev:backend": "cd /Users/aekyo/DesignSync/backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
     "install:all": "npm run install:frontend && npm run install:backend",
-    "install:frontend": "cd /Users/aekyo/DesignSync/frontend && npm install",
-    "install:backend": "cd /Users/aekyo/DesignSync/backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
     "build": "npm run build:frontend && npm run build:backend",
-    "build:frontend": "cd /Users/aekyo/DesignSync/frontend && npm run build",
-    "build:backend": "cd /Users/aekyo/DesignSync/backend && npm run build"
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
