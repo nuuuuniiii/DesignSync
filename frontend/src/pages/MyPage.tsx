@@ -99,7 +99,7 @@ export const MyPage = () => {
     navigate('/registration')
   }
 
-  const handleCancelSelect = () => {
+  const _handleCancelSelect = () => {
     setSelectMode(false)
     setSelectedProjects([])
   }

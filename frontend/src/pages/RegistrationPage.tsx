@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { Layout } from '@/components/Layout/Layout'
 import { Input } from '@/components/Input/Input'
-import { Textarea } from '@/components/Textarea/Textarea'
 import { Select } from '@/components/Select/Select'
 import { Checkbox } from '@/components/Checkbox/Checkbox'
 import { Button } from '@/components/Button/Button'
@@ -23,7 +22,7 @@ export const RegistrationPage = () => {
   const [designInputs, setDesignInputs] = useState<string[]>([''])
   const [editingDesignId, setEditingDesignId] = useState<string | null>(null)
   const [editingDesignValue, setEditingDesignValue] = useState<string>('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const _inputRef = useRef<HTMLInputElement>(null)
   
   // 각 디자인별 데이터 관리
   interface DesignData {
@@ -126,7 +125,6 @@ export const RegistrationPage = () => {
       setDesigns(newDesigns)
       if (selectedDesign === designs[index] || selectedDesign === null) {
         setSelectedDesign(value)
-        setDesignName(value)
       }
     }
   }
@@ -222,22 +220,21 @@ export const RegistrationPage = () => {
     }
   }
 
-  const handleDesignClick = (design: string, index: number) => {
+  const _handleDesignClick = (design: string, index: number) => {
     if (editingDesignId === `design-${index}`) {
       return // 이미 편집 중이면 클릭 무시
     }
     setSelectedDesign(design)
-    setDesignName(design)
   }
 
-  const handleDesignDoubleClick = (design: string, index: number, e: React.MouseEvent) => {
+  const _handleDesignDoubleClick = (design: string, index: number, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setEditingDesignValue(design)
     setEditingDesignId(`design-${index}`)
   }
 
-  const handleDesignBlur = (index: number) => {
+  const _handleDesignBlur = (index: number) => {
     if (editingDesignValue !== designs[index]) {
       const newDesigns = [...designs]
       newDesigns[index] = editingDesignValue
@@ -245,13 +242,12 @@ export const RegistrationPage = () => {
       
       if (selectedDesign === designs[index]) {
         setSelectedDesign(editingDesignValue)
-        setDesignName(editingDesignValue)
       }
     }
     setEditingDesignId(null)
   }
 
-  const handleDesignKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const _handleDesignKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key === 'Enter') {
       e.currentTarget.blur()
     }
@@ -261,7 +257,7 @@ export const RegistrationPage = () => {
     }
   }
 
-  const handleDesignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const _handleDesignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditingDesignValue(e.target.value)
   }
 
@@ -386,12 +382,12 @@ export const RegistrationPage = () => {
     })
   }
 
-  const handleDelete = () => {
+  const _handleDelete = () => {
     // TODO: API 호출 및 확인 모달
     console.log('Delete project')
   }
 
-  const handleDeleteDesign = (index: number, e: React.MouseEvent) => {
+  const _handleDeleteDesign = (index: number, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     const newDesigns = designs.filter((_, i) => i !== index)
@@ -401,10 +397,8 @@ export const RegistrationPage = () => {
     if (selectedDesign === designs[index]) {
       if (newDesigns.length > 0) {
         setSelectedDesign(newDesigns[0])
-        setDesignName(newDesigns[0])
       } else {
         setSelectedDesign('')
-        setDesignName('')
       }
     }
   }
@@ -692,7 +686,7 @@ export const RegistrationPage = () => {
                           />
                           <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <foreignObject x="-6.66667" y="-6.66667" width="63.3333" height="63.3333">
-                              <div xmlns="http://www.w3.org/1999/xhtml" style={{ backdropFilter: 'blur(3.33px)', clipPath: `url(#bgblur_0_5_2221_clip_path_${index})`, height: '100%', width: '100%' }}></div>
+                              <div style={{ backdropFilter: 'blur(3.33px)', clipPath: `url(#bgblur_0_5_2221_clip_path_${index})`, height: '100%', width: '100%' }}></div>
                             </foreignObject>
                             <g data-figma-bg-blur-radius="6.66667">
                               <rect width="50" height="50" rx="6.66667" fill="#222222" fillOpacity="0.5"/>
@@ -708,7 +702,7 @@ export const RegistrationPage = () => {
                         <button className="image-action-btn image-action-delete" onClick={() => handleDeleteImage(index)}>
                           <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <foreignObject x="-6.66667" y="-6.66667" width="63.3333" height="63.3333">
-                              <div xmlns="http://www.w3.org/1999/xhtml" style={{ backdropFilter: 'blur(3.33px)', clipPath: `url(#bgblur_0_5_2222_clip_path_${index})`, height: '100%', width: '100%' }}></div>
+                              <div style={{ backdropFilter: 'blur(3.33px)', clipPath: `url(#bgblur_0_5_2222_clip_path_${index})`, height: '100%', width: '100%' }}></div>
                             </foreignObject>
                             <g data-figma-bg-blur-radius="6.66667">
                               <rect width="50" height="50" rx="6.66667" fill="#222222" fillOpacity="0.5"/>
@@ -895,7 +889,7 @@ export const RegistrationPage = () => {
                     // Select 변경 시 Question List 닫기
                     setIsQuestionListOpen(false)
                   }}
-                  onClick={(e) => {
+                  onClick={(_e) => {
                     // Select 필드 클릭 시 Question List 닫기
                     setIsQuestionListOpen(false)
                   }}

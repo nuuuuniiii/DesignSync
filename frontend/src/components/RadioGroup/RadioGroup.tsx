@@ -1,4 +1,3 @@
-import { ReactNode } from 'react'
 import { Radio } from '../Radio/Radio'
 
 interface RadioOption {

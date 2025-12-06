@@ -11,7 +11,7 @@ interface StarRatingProps {
 export const StarRating = ({
   rating,
   maxRating = 5,
-  size = 17,
+  size: _size = 17,
   readOnly = true,
   onChange,
 }: StarRatingProps) => {

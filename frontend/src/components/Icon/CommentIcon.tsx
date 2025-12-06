@@ -16,7 +16,7 @@ interface CommentIconProps {
 export const CommentIcon: React.FC<CommentIconProps> = ({
   className = '',
   width = 32,
-  height = 32,
+  height: _height = 32,
   hasNewFeedback = false,
 }) => {
   // off 상태일 때는 작은 아이콘만 표시 (배경 없음, 17px)

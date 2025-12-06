@@ -189,7 +189,7 @@ interface RatingSliderProps {
 
 const RatingSlider = ({ value, onChange }: RatingSliderProps) => {
   const sliderRef = useRef<HTMLDivElement>(null)
-  const [isDragging, setIsDragging] = useState(false)
+  const [_isDragging, setIsDragging] = useState(false)
 
   const min = 0
   const max = 5
@@ -265,7 +265,7 @@ const RatingSlider = ({ value, onChange }: RatingSliderProps) => {
         </div>
       </div>
       <div className="slider-steps">
-        {[0, 1, 2, 3, 4, 5].map((step, index) => (
+        {[0, 1, 2, 3, 4, 5].map((step, _index) => (
           <div key={step} className="slider-step">
             <span className="step-number">{step}</span>
           </div>

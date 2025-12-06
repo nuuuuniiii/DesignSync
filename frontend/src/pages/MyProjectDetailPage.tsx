@@ -12,8 +12,8 @@ import './my-project-detail.css'
  * - https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=99-10713&m=dev
  */
 export const MyProjectDetailPage = () => {
-  const { projectId } = useParams<{ projectId: string }>()
-  const navigate = useNavigate()
+  const { projectId: _projectId } = useParams<{ projectId: string }>()
+  const _navigate = useNavigate()
   const location = useLocation()
   
   // URL 경로에 따라 app 여부 판단: /web이면 app=false (app=off), 아니면 app=true (app=on)
@@ -80,7 +80,7 @@ export const MyProjectDetailPage = () => {
     setSelectedDesign(designName)
   }
 
-  const handleScreenClick = (screenId: string) => {
+  const handleScreenClick = (_screenId: string) => {
     // Scroll to Feedbacks section
     const feedbacksSection = document.querySelector('.feedbacks-section')
     if (feedbacksSection) {

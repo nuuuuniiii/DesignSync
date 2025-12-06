@@ -32,7 +32,7 @@ export const FeedbackItem = ({
         return
       }
 
-      Object.entries(tooltipRefs.current).forEach(([id, ref]) => {
+      Object.entries(tooltipRefs.current).forEach(([_id, ref]) => {
         if (ref && !ref.contains(target)) {
           setOpenTooltipId(null)
         }

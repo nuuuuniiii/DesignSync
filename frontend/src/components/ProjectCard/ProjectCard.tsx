@@ -11,10 +11,10 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard = ({
-  id,
+  id: _id,
   name,
-  category,
-  status,
+  category: _category,
+  status: _status,
   subtitle,
   description,
   imageUrl,
