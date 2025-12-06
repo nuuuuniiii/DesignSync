@@ -81,7 +81,7 @@ export const ProjectOverviewPage = () => {
     setSelectedDesign(designName)
   }
 
-  const handleScreenClick = (screenId: string) => {
+  const handleScreenClick = (_screenId: string) => {
     // Scroll to Feedbacks section
     const feedbacksSection = document.querySelector('.project-overview-feedbacks-section')
     if (feedbacksSection) {
