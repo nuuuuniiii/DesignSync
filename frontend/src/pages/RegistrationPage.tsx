@@ -177,14 +177,16 @@ export const RegistrationPage = () => {
         if (oldDesignName && oldDesignName !== editingDesignValue) {
           const oldData = designsData[oldDesignName]
           if (oldData) {
+            // 새로운 상태 객체를 만들 때 oldDesignName을 제외
+            const newDesignsData = { ...designsData }
+            delete newDesignsData[oldDesignName]
             setDesignsData({
-              ...designsData,
+              ...newDesignsData,
               [editingDesignValue]: {
                 ...oldData,
                 name: editingDesignValue,
               },
             })
-            delete designsData[oldDesignName]
           }
         }
         

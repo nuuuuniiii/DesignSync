@@ -80,8 +80,9 @@ export const NewFeedbackRatingPage = () => {
       console.error('Project ID is missing')
       return
     }
+    const webPath = location.pathname.includes('/web') ? '/web' : ''
     console.log('Navigating to screen page with projectId:', projectId)
-    navigate(`/projects/${projectId}/feedback/screen`, { state: { ratings } })
+    navigate(`/projects/${projectId}${webPath}/feedback/screen`, { state: { ratings } })
   }
 
   return (

@@ -28,7 +28,15 @@ function App() {
           element={<NewFeedbackRatingPage />}
         />
         <Route
+          path="/projects/:projectId/web/feedback/rating"
+          element={<NewFeedbackRatingPage />}
+        />
+        <Route
           path="/projects/:projectId/feedback/screen"
+          element={<NewFeedbackScreenPage />}
+        />
+        <Route
+          path="/projects/:projectId/web/feedback/screen"
           element={<NewFeedbackScreenPage />}
         />
         <Route path="/registration" element={<RegistrationPage />} />

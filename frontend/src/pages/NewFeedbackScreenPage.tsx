@@ -227,7 +227,8 @@ export const NewFeedbackScreenPage = () => {
   }
 
   const handlePrevious = () => {
-    navigate(`/projects/${projectId}/feedback/rating`)
+    const webPath = location.pathname.includes('/web') ? '/web' : ''
+    navigate(`/projects/${projectId}${webPath}/feedback/rating`)
   }
 
   const handleRegister = () => {
@@ -238,7 +239,8 @@ export const NewFeedbackScreenPage = () => {
       selectedScreen,
       feedbacks,
     })
-    navigate(`/projects/${projectId}`)
+    const webPath = location.pathname.includes('/web') ? '/web' : ''
+    navigate(`/projects/${projectId}${webPath}`)
   }
 
   return (

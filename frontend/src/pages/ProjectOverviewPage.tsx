@@ -94,7 +94,8 @@ export const ProjectOverviewPage = () => {
   }
 
   const handleAddFeedback = () => {
-    navigate(`/projects/${projectId}/feedback/rating`)
+    const webPath = location.pathname.includes('/web') ? '/web' : ''
+    navigate(`/projects/${projectId}${webPath}/feedback/rating`)
   }
 
   const leftRatings = ratingTypes.slice(0, 3)
