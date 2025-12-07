@@ -134,18 +134,23 @@ export const MyPage = () => {
 
     try {
       const platformFilter = myFeedbackPlatform === 'web' ? 'web' : 'app'
+      console.log('📝 [MyPage] 피드백 프로젝트 가져오기 시작, userId:', user.id, 'platform:', platformFilter)
       const result = await getFeedbackedProjects({
         platform: platformFilter,
       })
 
+      console.log('📝 [MyPage] 피드백 프로젝트 결과:', result)
+
       if (result.success && result.data) {
+        console.log('📝 [MyPage] 피드백 프로젝트 개수:', result.data.length)
         const convertedProjects = result.data.map(convertApiProjectToDisplayProject)
         setFeedbackProjects(convertedProjects)
       } else {
+        console.warn('📝 [MyPage] 피드백 프로젝트 가져오기 실패:', result.error)
         setFeedbackProjects([])
       }
     } catch (err: unknown) {
-      console.error('피드백 프로젝트 목록 가져오기 오류:', err)
+      console.error('📝 [MyPage] 피드백 프로젝트 목록 가져오기 오류:', err)
       setFeedbackProjects([])
     }
   }, [isAuthenticated, user, myFeedbackPlatform])

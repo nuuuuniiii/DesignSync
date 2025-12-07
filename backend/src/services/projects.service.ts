@@ -360,40 +360,55 @@ export class ProjectsService {
     }
   ): Promise<(Project & { thumbnail_url?: string })[]> {
     try {
-      // 1. 사용자가 피드백을 남긴 프로젝트 ID 목록 가져오기
+      // 1. 사용자가 피드백을 남긴 프로젝트 ID 목록 가져오기 (feedbacks 테이블에서 직접)
       const { data: feedbacks, error: feedbacksError } = await supabaseAdmin
         .from('feedbacks')
-        .select('design_id')
+        .select('project_id')
         .eq('user_id', userId)
 
       if (feedbacksError) {
         logger.error(`Failed to fetch feedbacks for user ${userId}:`, feedbacksError)
+        logger.error('Feedbacks error details:', JSON.stringify(feedbacksError))
         return []
       }
 
-      if (!feedbacks || feedbacks.length === 0) {
-        return []
+      // 2. 사용자가 rating만 남긴 프로젝트도 포함 (feedback_ratings 테이블)
+      const { data: ratings, error: ratingsError } = await supabaseAdmin
+        .from('feedback_ratings')
+        .select('feedback_id')
+        .eq('user_id', userId)
+
+      let ratingProjectIds: string[] = []
+      if (!ratingsError && ratings && ratings.length > 0) {
+        const ratingFeedbackIds = [...new Set(ratings.map((r) => r.feedback_id))]
+        const { data: ratingFeedbacks, error: ratingFeedbacksError } = await supabaseAdmin
+          .from('feedbacks')
+          .select('project_id')
+          .in('id', ratingFeedbackIds)
+
+        if (!ratingFeedbacksError && ratingFeedbacks) {
+          ratingProjectIds = ratingFeedbacks.map((f) => f.project_id).filter((id): id is string => !!id)
+        }
       }
 
-      // 2. 디자인 ID로 프로젝트 ID 찾기
-      const designIds = [...new Set(feedbacks.map((fb) => fb.design_id))]
-      const { data: designs, error: designsError } = await supabaseAdmin
-        .from('designs')
-        .select('project_id')
-        .in('id', designIds)
+      // 3. 피드백과 rating을 합쳐서 고유한 프로젝트 ID 목록 생성
+      const allProjectIds = [
+        ...new Set([
+          ...(feedbacks?.map((f) => f.project_id).filter((id): id is string => !!id) || []),
+          ...ratingProjectIds,
+        ]),
+      ]
 
-      if (designsError || !designs || designs.length === 0) {
+      if (allProjectIds.length === 0) {
+        logger.info(`No feedbacked projects found for user ${userId}`)
         return []
       }
-
-      // 3. 고유한 프로젝트 ID 목록 생성
-      const projectIds = [...new Set(designs.map((d) => d.project_id))]
 
       // 4. 프로젝트 정보 조회
       let query = supabaseAdmin
         .from('projects')
         .select('*')
-        .in('id', projectIds)
+        .in('id', allProjectIds)
 
       if (filters?.platform) {
         query = query.eq('platform', filters.platform)
@@ -401,10 +416,17 @@ export class ProjectsService {
 
       const { data: projects, error: projectsError } = await query.order('created_at', { ascending: false })
 
-      if (projectsError || !projects) {
+      if (projectsError) {
         logger.error('Failed to fetch feedbacked projects:', projectsError)
         return []
       }
+
+      if (!projects || projects.length === 0) {
+        logger.info(`No projects found for IDs: ${allProjectIds.join(', ')}`)
+        return []
+      }
+
+      logger.info(`Found ${projects.length} feedbacked projects for user ${userId}`)
 
       // 5. 각 프로젝트의 썸네일 이미지 가져오기
       const projectsWithThumbnails = await Promise.all(
