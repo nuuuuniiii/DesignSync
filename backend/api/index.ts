@@ -33,28 +33,36 @@ app.use(express.urlencoded({ extended: true }))
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'DesignSync API Server' })
+  res.json({ 
+    status: 'ok', 
+    message: 'DesignSync API Server',
+    routesLoaded,
+    routeError: routeError ? routeError.message : null
+  })
 })
 
 // 라우트 동적 import (빌드된 파일 참조)
 // try-catch로 안전하게 처리
-let testRoutes: express.Router
-let projectsRoutes: express.Router
-let designsRoutes: express.Router
-let authRoutes: express.Router
-let feedbacksRoutes: express.Router
+let routesLoaded = false
+let routeError: Error | null = null
 
 try {
-  // @ts-ignore - dist 폴더의 빌드된 파일 참조
-  testRoutes = require('../dist/routes/test.routes').default
-  // @ts-ignore
-  projectsRoutes = require('../dist/routes/projects.routes').default
-  // @ts-ignore
-  designsRoutes = require('../dist/routes/designs.routes').default
-  // @ts-ignore
-  authRoutes = require('../dist/routes/auth.routes').default
-  // @ts-ignore
-  feedbacksRoutes = require('../dist/routes/feedbacks.routes').default
+  console.log('Loading routes from dist folder...')
+  
+  // CommonJS require 사용 (빌드된 파일은 CommonJS 형식)
+  const testRoutesModule = require('../dist/routes/test.routes')
+  const projectsRoutesModule = require('../dist/routes/projects.routes')
+  const designsRoutesModule = require('../dist/routes/designs.routes')
+  const authRoutesModule = require('../dist/routes/auth.routes')
+  const feedbacksRoutesModule = require('../dist/routes/feedbacks.routes')
+
+  const testRoutes = testRoutesModule.default || testRoutesModule
+  const projectsRoutes = projectsRoutesModule.default || projectsRoutesModule
+  const designsRoutes = designsRoutesModule.default || designsRoutesModule
+  const authRoutes = authRoutesModule.default || authRoutesModule
+  const feedbacksRoutes = feedbacksRoutesModule.default || feedbacksRoutesModule
+
+  console.log('Routes loaded successfully')
 
   // API routes
   app.use('/api/test', testRoutes)
@@ -62,14 +70,21 @@ try {
   app.use('/api/projects', projectsRoutes)
   app.use('/api/projects', designsRoutes)
   app.use('/api/feedbacks', feedbacksRoutes)
+  
+  routesLoaded = true
 } catch (error) {
-  console.error('Failed to load routes:', error)
-  // 라우트 로드 실패 시 에러 핸들링
+  routeError = error instanceof Error ? error : new Error(String(error))
+  console.error('Failed to load routes:', routeError.message)
+  console.error('Stack:', routeError.stack)
+  
+  // 라우트 로드 실패 시 상세한 에러 정보 제공
   app.use('/api/*', (req, res) => {
+    console.error('Route request failed - routes not loaded')
     res.status(500).json({ 
       error: 'Internal server error', 
       message: 'Routes not loaded properly',
-      details: error instanceof Error ? error.message : String(error)
+      details: routeError?.message || 'Unknown error',
+      stack: routeError?.stack
     })
   })
 }
