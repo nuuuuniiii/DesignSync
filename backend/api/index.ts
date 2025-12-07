@@ -63,10 +63,15 @@ try {
   console.log('Loading routes from dist folder...')
   
   // CommonJS require 사용 (빌드된 파일은 CommonJS 형식)
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const testRoutesModule = require('../dist/routes/test.routes')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const projectsRoutesModule = require('../dist/routes/projects.routes')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const designsRoutesModule = require('../dist/routes/designs.routes')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const authRoutesModule = require('../dist/routes/auth.routes')
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const feedbacksRoutesModule = require('../dist/routes/feedbacks.routes')
 
   const testRoutes = testRoutesModule.default || testRoutesModule
