@@ -18,6 +18,9 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": "18.x || 20.x || 22.x"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.86.2",
     "@vercel/node": "^3.2.29",
