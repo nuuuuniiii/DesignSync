@@ -90,8 +90,9 @@ export const MyPage = () => {
         setError(result.error || '프로젝트 목록을 가져오는데 실패했습니다.')
         setMyProjects([])
       }
-    } catch (err: any) {
-      setError(err.message || '프로젝트 목록을 가져오는 중 오류가 발생했습니다.')
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '프로젝트 목록을 가져오는 중 오류가 발생했습니다.'
+      setError(errorMessage)
       setMyProjects([])
     } finally {
       setIsLoading(false)

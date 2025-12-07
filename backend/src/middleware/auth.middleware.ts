@@ -30,11 +30,10 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     }
 
     // 사용자 정보를 req에 추가
-    ;(req as any).user = user
-    ;(req as any).userId = user.id
-
+    req.user = user
+    req.userId = user.id
     next()
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Error in authenticateToken:', error)
     return res.status(401).json({
       success: false,
@@ -54,15 +53,16 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
     if (token) {
       const user = await authService.getUserByToken(token)
       if (user) {
-        ;(req as any).user = user
-        ;(req as any).userId = user.id
+        req.user = user
+        req.userId = user.id
       }
     }
 
     next()
-  } catch (error: any) {
+  } catch (error: unknown) {
     // 에러가 발생해도 통과 (선택적 인증)
-    logger.warn('Error in optionalAuth (ignored):', error.message)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    logger.warn('Error in optionalAuth (ignored):', errorMessage)
     next()
   }
 }

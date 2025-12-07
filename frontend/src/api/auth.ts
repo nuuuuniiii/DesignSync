@@ -80,10 +80,11 @@ export async function signUp(data: SignUpRequest): Promise<ApiResponse<AuthRespo
       success: true,
       data: result.data,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : '네트워크 오류가 발생했습니다.'
     return {
       success: false,
-      error: error.message || '네트워크 오류가 발생했습니다.',
+      error: errorMessage,
     }
   }
 }
@@ -119,10 +120,11 @@ export async function signIn(data: SignInRequest): Promise<ApiResponse<AuthRespo
       success: true,
       data: result.data,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : '네트워크 오류가 발생했습니다.'
     return {
       success: false,
-      error: error.message || '네트워크 오류가 발생했습니다.',
+      error: errorMessage,
     }
   }
 }
@@ -165,10 +167,11 @@ export async function getCurrentUser(): Promise<ApiResponse<AuthResponse['user']
       success: true,
       data: result.data,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : '네트워크 오류가 발생했습니다.'
     return {
       success: false,
-      error: error.message || '네트워크 오류가 발생했습니다.',
+      error: errorMessage,
     }
   }
 }

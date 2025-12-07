@@ -39,7 +39,7 @@ router.get('/database', async (_req: Request, res: Response) => {
     }
 
     // users 테이블이 존재하는지 확인
-    const { data, error } = await supabaseAdmin.from('users').select('count').limit(1)
+    const { error } = await supabaseAdmin.from('users').select('count').limit(1)
 
     if (error) {
       logger.error('Database connection test failed:', error)
@@ -59,13 +59,15 @@ router.get('/database', async (_req: Request, res: Response) => {
         users: 'connected',
       },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Database test error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Database test failed'
+    const errorStack = error instanceof Error ? error.stack : undefined
     return res.status(500).json({
       success: false,
       message: 'Database test failed',
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      error: errorMessage,
+      stack: process.env.NODE_ENV === 'development' ? errorStack : undefined,
     })
   }
 })
@@ -116,14 +118,19 @@ router.get('/cloudinary', async (_req: Request, res: Response) => {
       message: 'Cloudinary connection successful',
       status: result.status,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Cloudinary test error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Cloudinary connection failed'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    const errorDetails = error && typeof error === 'object' && 'http_code' in error && 'name' in error
+      ? { httpCode: error.http_code, name: error.name }
+      : undefined
     return res.status(500).json({
       success: false,
       message: 'Cloudinary connection failed',
-      error: error.message,
-      details: error.http_code ? { httpCode: error.http_code, name: error.name } : undefined,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      error: errorMessage,
+      details: errorDetails,
+      stack: process.env.NODE_ENV === 'development' ? errorStack : undefined,
     })
   }
 })
@@ -170,8 +177,8 @@ router.get('/env', async (_req: Request, res: Response) => {
  */
 router.get('/all', async (_req: Request, res: Response) => {
   const results: {
-    database: { success: boolean; message: string; error?: string; details?: any }
-    cloudinary: { success: boolean; message: string; error?: string; details?: any }
+    database: { success: boolean; message: string; error?: string; details?: string | number | { httpCode?: unknown; name?: unknown } }
+    cloudinary: { success: boolean; message: string; error?: string; details?: string | number | { httpCode?: unknown; name?: unknown } }
   } = {
     database: { success: false, message: '' },
     cloudinary: { success: false, message: '' },
@@ -199,12 +206,15 @@ router.get('/all', async (_req: Request, res: Response) => {
       if (error) throw error
       results.database = { success: true, message: 'Database connected' }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Database connection failed'
+    const errorCode = error && typeof error === 'object' && 'code' in error ? error.code : undefined
+    const errorDetails = error && typeof error === 'object' && 'details' in error ? error.details : undefined
     results.database = {
       success: false,
       message: 'Database connection failed',
-      error: error.message,
-      details: error.code || error.details,
+      error: errorMessage,
+      details: errorCode || errorDetails,
     }
   }
 
@@ -234,12 +244,15 @@ router.get('/all', async (_req: Request, res: Response) => {
       await cloudinary.api.ping()
       results.cloudinary = { success: true, message: 'Cloudinary connected' }
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Cloudinary connection failed'
+    const errorHttpCode = error && typeof error === 'object' && 'http_code' in error ? error.http_code : undefined
+    const errorName = error && typeof error === 'object' && 'name' in error ? error.name : undefined
     results.cloudinary = {
       success: false,
       message: 'Cloudinary connection failed',
-      error: error.message,
-      details: error.http_code || error.name,
+      error: errorMessage,
+      details: errorHttpCode || errorName,
     }
   }
 

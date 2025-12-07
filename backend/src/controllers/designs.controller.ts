@@ -71,11 +71,12 @@ export class DesignsController {
         success: true,
         data: result,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error creating design:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create design'
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to create design',
+        error: errorMessage,
       })
     }
   }

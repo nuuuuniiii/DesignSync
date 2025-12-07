@@ -113,10 +113,11 @@ export async function createDesignWithImages(
       success: true,
       data: result.data,
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : '네트워크 오류가 발생했습니다.'
     return {
       success: false,
-      error: error.message || '네트워크 오류가 발생했습니다.',
+      error: errorMessage,
     }
   }
 }

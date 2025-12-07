@@ -59,15 +59,16 @@ export const SignInPage = () => {
 
       if (result.success) {
         // 로그인 성공 시 원래 페이지로 이동 (또는 홈)
-        const from = (location.state as any)?.from || '/explore'
+        const from = (location.state as { from?: string } | null)?.from || '/explore'
         navigate(from)
       } else {
         setErrors({ submit: result.error || '이메일 또는 비밀번호가 올바르지 않습니다.' })
         setIsLoading(false)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign in error:', error)
-      setErrors({ submit: error.message || '로그인 중 오류가 발생했습니다.' })
+      const errorMessage = error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.'
+      setErrors({ submit: errorMessage })
       setIsLoading(false)
     }
   }

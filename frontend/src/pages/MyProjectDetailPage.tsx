@@ -14,7 +14,7 @@ import './my-project-detail.css'
  */
 export const MyProjectDetailPage = () => {
   const { projectId } = useParams<{ projectId: string }>()
-  const navigate = useNavigate()
+  const _navigate = useNavigate()
   const location = useLocation()
   
   // URL 경로에 따라 app 여부 판단: /web이면 app=false (app=off), 아니면 app=true (app=on)
@@ -65,9 +65,10 @@ export const MyProjectDetailPage = () => {
         } else {
           setError(result.error || '프로젝트를 불러오는데 실패했습니다.')
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('프로젝트 불러오기 에러:', err)
-        setError(err.message || '프로젝트를 불러오는 중 오류가 발생했습니다.')
+        const errorMessage = err instanceof Error ? err.message : '프로젝트를 불러오는 중 오류가 발생했습니다.'
+        setError(errorMessage)
       } finally {
         setIsLoading(false)
       }

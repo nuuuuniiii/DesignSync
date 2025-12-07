@@ -114,9 +114,10 @@ export const SignUpPage = () => {
         setErrors({ submit: result.error || '회원가입에 실패했습니다.' })
         setIsLoading(false)
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign up error:', error)
-      setErrors({ submit: error.message || '회원가입 중 오류가 발생했습니다.' })
+      const errorMessage = error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.'
+      setErrors({ submit: errorMessage })
       setIsLoading(false)
     }
   }

@@ -36,7 +36,7 @@
    **변경 후 (실제 값으로):**
    ```env
    SUPABASE_URL=https://실제프로젝트ID.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.실제토큰값
+   SUPABASE_SERVICE_ROLE_KEY=your-actual-service-role-key-from-dashboard
    ```
 
    **값 찾는 방법:**
@@ -88,7 +88,7 @@ sed -i '' 's|CLOUDINARY_API_SECRET=your-api-secret|CLOUDINARY_API_SECRET=실제�
 
 ```env
 SUPABASE_URL=https://abcdefghijklmnop.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG1ub3AiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNjQ1OTg0ODAwLCJleHAiOjE5NjE1NjA4MDB9.실제토큰
+SUPABASE_SERVICE_ROLE_KEY=your-actual-service-role-key-from-dashboard
 CLOUDINARY_CLOUD_NAME=my-cloud-name
 CLOUDINARY_API_KEY=123456789012345
 CLOUDINARY_API_SECRET=abcdefghijklmnopqrstuvwxyz123456

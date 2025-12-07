@@ -59,9 +59,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoading(false)
         return { success: false, error: result.error }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsLoading(false)
-      return { success: false, error: error.message || '로그인에 실패했습니다.' }
+      const errorMessage = error instanceof Error ? error.message : '로그인에 실패했습니다.'
+      return { success: false, error: errorMessage }
     }
   }
 
@@ -77,9 +78,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoading(false)
         return { success: false, error: result.error }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsLoading(false)
-      return { success: false, error: error.message || '회원가입에 실패했습니다.' }
+      const errorMessage = error instanceof Error ? error.message : '회원가입에 실패했습니다.'
+      return { success: false, error: errorMessage }
     }
   }
 

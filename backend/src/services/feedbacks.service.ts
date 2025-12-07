@@ -116,9 +116,12 @@ export class FeedbacksService {
       }
 
       return { feedback_id: mainFeedbackId }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error in createFeedback:', error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error('Failed to create feedback')
     }
   }
 
@@ -152,7 +155,7 @@ export class FeedbacksService {
       }
 
       // users 정보 추출
-      return (feedbacks || []).map((fb: any) => ({
+      return (feedbacks || []).map((fb) => ({
         id: fb.id,
         project_id: fb.project_id,
         user_id: fb.user_id,
@@ -164,9 +167,12 @@ export class FeedbacksService {
         updated_at: fb.updated_at,
         user_name: fb.users?.name || null,
       }))
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error in getFeedbacksByProject:', error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error('Failed to fetch feedbacks')
     }
   }
 
@@ -200,7 +206,7 @@ export class FeedbacksService {
         throw new Error(`Failed to fetch feedbacks: ${error.message}`)
       }
 
-      return (feedbacks || []).map((fb: any) => ({
+      return (feedbacks || []).map((fb) => ({
         id: fb.id,
         project_id: fb.project_id,
         user_id: fb.user_id,
@@ -212,9 +218,12 @@ export class FeedbacksService {
         updated_at: fb.updated_at,
         user_name: fb.users?.name || null,
       }))
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error in getFeedbacksByDesignAndQuestion:', error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error('Failed to fetch feedbacks')
     }
   }
 
@@ -264,7 +273,7 @@ export class FeedbacksService {
       }
 
       return averages
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error in getAverageRatingsByProject:', error)
       return {}
     }

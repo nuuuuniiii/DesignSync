@@ -70,7 +70,7 @@ export const NewFeedbackScreenPage = () => {
             if (firstDesign.questions && firstDesign.questions.length > 0) {
               const initialFeedbacks: Record<string, Array<{ id: string; text: string; screenNumber: number | null }>> = {}
               
-              firstDesign.questions.forEach((q, index) => {
+              firstDesign.questions.forEach((q) => {
                 initialFeedbacks[q.id] = [{ 
                   id: `${q.id}-input-0`, 
                   text: '', 
@@ -91,8 +91,9 @@ export const NewFeedbackScreenPage = () => {
         } else {
           setError(result.error || '프로젝트를 불러오는데 실패했습니다.')
         }
-      } catch (err: any) {
-        setError(err.message || '프로젝트를 불러오는 중 오류가 발생했습니다.')
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : '프로젝트를 불러오는 중 오류가 발생했습니다.'
+        setError(errorMessage)
       } finally {
         setIsLoading(false)
       }
@@ -350,8 +351,9 @@ export const NewFeedbackScreenPage = () => {
       } else {
         setError(result.error || '피드백 등록에 실패했습니다.')
       }
-    } catch (err: any) {
-      setError(err.message || '피드백 등록 중 오류가 발생했습니다.')
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '피드백 등록 중 오류가 발생했습니다.'
+      setError(errorMessage)
     } finally {
       setIsSubmitting(false)
     }

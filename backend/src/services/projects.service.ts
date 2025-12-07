@@ -152,7 +152,7 @@ export class ProjectsService {
         feedbackTypesList = feedbackTypesError || !feedbackTypes
           ? []
           : feedbackTypes.map((ft) => ft.feedback_type)
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error(`Failed to fetch feedback types for project ${id}:`, error)
         feedbackTypesList = []
       }
@@ -220,7 +220,7 @@ export class ProjectsService {
                         created_at: fb.created_at,
                       })),
                     }
-                  } catch (error: any) {
+                  } catch (error: unknown) {
                     logger.error(`Failed to fetch feedbacks for question ${q.id}:`, error)
                     return {
                       id: q.id,
@@ -243,7 +243,7 @@ export class ProjectsService {
             })
           )
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error(`Failed to fetch designs for project ${id}:`, error)
         designsWithImagesAndQuestions = []
       }
@@ -252,7 +252,7 @@ export class ProjectsService {
       let averageRatings: Record<string, number> = {}
       try {
         averageRatings = await feedbacksService.getAverageRatingsByProject(id)
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error(`Failed to fetch average ratings for project ${id}:`, error)
         averageRatings = {}
       }
@@ -285,9 +285,12 @@ export class ProjectsService {
       })
       
       return result
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(`Error in getProjectByIdWithDetails for project ${id}:`, error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      }
+      throw new Error(`Failed to fetch project ${id}`)
     }
   }
 

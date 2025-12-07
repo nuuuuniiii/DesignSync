@@ -70,7 +70,7 @@ SUPABASE_ANON_KEY=복사한-키-여기에-붙여넣기
 
 **예시:**
 ```env
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsYXhicHVkb2t2eXJka2h4Y2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNjQ1MzIsImV4cCI6MjA4MDY0MDUzMn0.어쩌고저쩌고...
+SUPABASE_ANON_KEY=your-actual-anon-key-from-dashboard
 ```
 
 ---

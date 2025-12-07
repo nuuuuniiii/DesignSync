@@ -31,7 +31,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # ✅ 올바른 예 (실제 값)
 SUPABASE_URL=https://abcdefghijklmnop.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=your-actual-service-role-key-from-supabase-dashboard
 ```
 
 ### 1.3 환경변수 상태 확인 API
@@ -68,10 +68,11 @@ http://localhost:8000/api/test/env
 3. **.env 파일 형식 확인**
    ```env
    SUPABASE_URL=https://your-project-id.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvdXItcHJvamVjdC1pZCIsInJvbGUiOiJzZXJ2aWNlX3JvbGUiLCJpYXQiOjE2NDU5ODQ4MDAsImV4cCI6MTk2MTU2MDgwMH0.your-token
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
    ```
    - 값에 공백이 없어야 합니다
    - 따옴표로 감싸지 마세요
+   - ⚠️ **주의**: Service Role Key는 Supabase Dashboard에서 복사한 실제 키를 사용하세요. 예제 형식: `eyJhbGc...` (JWT 토큰 형식)
 
 ### 2.2 테이블 확인
 

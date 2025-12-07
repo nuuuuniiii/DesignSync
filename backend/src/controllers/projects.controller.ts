@@ -17,7 +17,7 @@ export class ProjectsController {
       }
 
       // 인증된 사용자 ID 사용 (인증 미들웨어에서 설정)
-      const userId = (req as any).user?.id
+      const userId = req.user?.id
 
       if (!userId) {
         return res.status(401).json({
@@ -32,11 +32,12 @@ export class ProjectsController {
         success: true,
         data: project,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error creating project:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create project'
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to create project',
+        error: errorMessage,
       })
     }
   }
@@ -57,11 +58,12 @@ export class ProjectsController {
         success: true,
         data: projects,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error fetching projects:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch projects'
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to fetch projects',
+        error: errorMessage,
       })
     }
   }
@@ -83,11 +85,12 @@ export class ProjectsController {
         success: true,
         data: project,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error fetching project:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch project'
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to fetch project',
+        error: errorMessage,
       })
     }
   }

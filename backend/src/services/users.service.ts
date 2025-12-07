@@ -14,7 +14,7 @@ export class UsersService {
    */
   async getOrCreateUser(userId: string, email?: string, name?: string): Promise<User> {
     // 먼저 사용자가 존재하는지 확인
-    const { data: existingUser, error: fetchError } = await supabaseAdmin
+    const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', userId)
@@ -50,7 +50,7 @@ export class UsersService {
    */
   async getOrCreateUserByEmail(email: string, name?: string): Promise<User> {
     // 먼저 이메일로 사용자 찾기
-    const { data: existingUser, error: fetchError } = await supabaseAdmin
+    const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('email', email)

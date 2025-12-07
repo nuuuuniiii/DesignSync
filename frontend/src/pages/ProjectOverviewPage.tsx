@@ -55,8 +55,9 @@ export const ProjectOverviewPage = () => {
         } else {
           setError(result.error || '프로젝트를 불러오는데 실패했습니다.')
         }
-      } catch (err: any) {
-        setError(err.message || '프로젝트를 불러오는 중 오류가 발생했습니다.')
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : '프로젝트를 불러오는 중 오류가 발생했습니다.'
+        setError(errorMessage)
       } finally {
         setIsLoading(false)
       }

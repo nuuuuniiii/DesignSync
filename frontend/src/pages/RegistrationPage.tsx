@@ -482,10 +482,10 @@ export const RegistrationPage = () => {
                   throw new Error(uploadResult.error)
                 }
               }
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error(`Error uploading images for design ${designName}:`, error)
               // 토큰 오류인 경우 재throw하여 상위에서 처리
-              if (error.message?.includes('만료') || error.message?.includes('로그인')) {
+              if (error instanceof Error && (error.message?.includes('만료') || error.message?.includes('로그인'))) {
                 throw error
               }
             }
@@ -495,9 +495,9 @@ export const RegistrationPage = () => {
         // 모든 이미지 업로드 완료 대기
         try {
           await Promise.all(uploadPromises)
-        } catch (error: any) {
+        } catch (error: unknown) {
           // 토큰 오류인 경우 로그인 페이지로 리다이렉트
-          if (error.message?.includes('만료') || error.message?.includes('로그인')) {
+          if (error instanceof Error && (error.message?.includes('만료') || error.message?.includes('로그인'))) {
             logout()
             navigate('/sign-in', { 
               state: { 
@@ -531,8 +531,9 @@ export const RegistrationPage = () => {
         }
         setError(result.error || '프로젝트 생성에 실패했습니다.')
       }
-    } catch (err: any) {
-      setError(err.message || '프로젝트 생성 중 오류가 발생했습니다.')
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '프로젝트 생성 중 오류가 발생했습니다.'
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

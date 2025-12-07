@@ -57,7 +57,7 @@ export class DesignsService {
           } else if (image) {
             uploadedImages.push(image)
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           logger.error(`Failed to upload image ${index + 1} for design ${design.id}:`, error)
           // 이미지 업로드 실패해도 계속 진행
         }
@@ -66,7 +66,6 @@ export class DesignsService {
 
     // 3. 질문 저장
     const questionsToCreate: CreateQuestionRequest[] = []
-    let questionOrder = 0
 
     // 커스텀 질문 저장 (먼저 추가)
     if (designData.customQuestions && designData.customQuestions.length > 0) {
@@ -98,7 +97,7 @@ export class DesignsService {
     if (questionsToCreate.length > 0) {
       try {
         await questionsService.createQuestions(projectId, questionsToCreate, design.id)
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error(`Failed to save questions for design ${design.id}:`, error)
         // 질문 저장 실패해도 계속 진행 (디자인과 이미지는 이미 저장됨)
       }
@@ -141,7 +140,7 @@ export class DesignsService {
       }
 
       return images[0].cloudinary_url
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(`Failed to get thumbnail for project ${projectId}:`, error)
       return null
     }
@@ -176,7 +175,7 @@ export class DesignsService {
       }
 
       return images.map((img) => img.cloudinary_url)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(`Failed to get images for project ${projectId}:`, error)
       return []
     }

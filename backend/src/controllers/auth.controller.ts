@@ -43,11 +43,12 @@ export class AuthController {
         success: true,
         data: result,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error in signUp:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign up'
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to sign up',
+        error: errorMessage,
       })
     }
   }
@@ -74,20 +75,21 @@ export class AuthController {
         success: true,
         data: result,
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error in signIn:', error)
       
       // 인증 실패인 경우 401 반환
-      if (error.message.includes('Invalid') || error.message.includes('credentials')) {
+      if (error instanceof Error && (error.message.includes('Invalid') || error.message.includes('credentials'))) {
         return res.status(401).json({
           success: false,
           error: 'Invalid email or password',
         })
       }
 
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign in'
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to sign in',
+        error: errorMessage,
       })
     }
   }
@@ -99,7 +101,7 @@ export class AuthController {
   async getMe(req: Request, res: Response) {
     try {
       // 인증 미들웨어에서 설정한 user 정보 사용
-      const user = (req as any).user
+      const user = req.user
 
       if (!user) {
         return res.status(401).json({
@@ -116,11 +118,12 @@ export class AuthController {
           name: user.name,
         },
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error in getMe:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to get user info'
       res.status(500).json({
         success: false,
-        error: error.message || 'Failed to get user info',
+        error: errorMessage,
       })
     }
   }
