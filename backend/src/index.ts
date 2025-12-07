@@ -12,13 +12,25 @@ dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 8000
-// CORS 설정: Vercel 환경에서는 모든 origin 허용 또는 환경변수 사용
-const CORS_ORIGIN = process.env.CORS_ORIGIN || '*'
+// CORS 설정: 여러 origin 허용 (쉼표로 구분)
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000'
+
+// 여러 origin을 배열로 변환
+const allowedOrigins = CORS_ORIGIN.includes(',')
+  ? CORS_ORIGIN.split(',').map((o: string) => o.trim())
+  : [CORS_ORIGIN]
 
 // Middleware
 app.use(
   cors({
-    origin: CORS_ORIGIN === '*' ? true : CORS_ORIGIN,
+    origin: (origin, callback) => {
+      // origin이 없거나 (같은 도메인) 허용된 origin 목록에 있으면 허용
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        callback(null, true)
+      } else {
+        callback(new Error(`Not allowed by CORS. Origin: ${origin}, Allowed: ${allowedOrigins.join(', ')}`))
+      }
+    },
     credentials: true,
   })
 )
