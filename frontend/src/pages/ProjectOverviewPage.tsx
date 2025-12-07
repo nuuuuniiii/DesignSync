@@ -46,11 +46,18 @@ export const ProjectOverviewPage = () => {
         
         if (result.success && result.data) {
           const projectData = result.data as ProjectWithDetails
+          
+          // 디버깅: designs 확인
+          console.log('📦 [ProjectOverview] 프로젝트 데이터:', projectData)
+          console.log('📦 [ProjectOverview] Designs 배열:', projectData.designs)
+          console.log('📦 [ProjectOverview] Designs 개수:', projectData.designs?.length || 0)
+          
           setProject(projectData)
           
           // 첫 번째 디자인 선택
           if (projectData.designs && projectData.designs.length > 0) {
             setSelectedDesign(projectData.designs[0].name)
+            console.log('📦 [ProjectOverview] 선택된 첫 번째 디자인:', projectData.designs[0].name)
           }
         } else {
           setError(result.error || '프로젝트를 불러오는데 실패했습니다.')
@@ -230,15 +237,18 @@ export const ProjectOverviewPage = () => {
                 <p className="project-overview-section-label">Designs</p>
                 <div className="project-overview-designs-list">
                   {project.designs && project.designs.length > 0 ? (
-                    project.designs.map((design) => (
-                      <button
-                        key={design.id}
-                        className={`project-overview-design-item ${selectedDesign === design.name ? 'selected' : ''}`}
-                        onClick={() => handleDesignSelect(design.name)}
-                      >
-                        {design.name}
-                      </button>
-                    ))
+                    <>
+                      {console.log('🎨 [ProjectOverview] 렌더링할 Designs:', project.designs.map(d => ({ id: d.id, name: d.name })))}
+                      {project.designs.map((design) => (
+                        <button
+                          key={design.id}
+                          className={`project-overview-design-item ${selectedDesign === design.name ? 'selected' : ''}`}
+                          onClick={() => handleDesignSelect(design.name)}
+                        >
+                          {design.name}
+                        </button>
+                      ))}
+                    </>
                   ) : (
                     <p style={{ color: '#999', fontSize: '14px' }}>등록된 디자인이 없습니다.</p>
                   )}

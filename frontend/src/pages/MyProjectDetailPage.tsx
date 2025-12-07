@@ -46,21 +46,28 @@ export const MyProjectDetailPage = () => {
           const projectData = result.data as ProjectWithDetails
           
           // 디버깅: 데이터 확인
-          console.log('프로젝트 데이터:', projectData)
-          console.log('프로젝트 데이터 전체:', JSON.stringify(projectData, null, 2))
-          console.log('피드백 타입:', projectData.feedback_types)
-          console.log('디자인:', projectData.designs)
-          console.log('프로젝트 ID:', projectData.id)
+          console.log('📦 [MyProjectDetail] 프로젝트 데이터:', projectData)
+          console.log('📦 [MyProjectDetail] Designs 배열:', projectData.designs)
+          console.log('📦 [MyProjectDetail] Designs 개수:', projectData.designs?.length || 0)
+          if (projectData.designs) {
+            projectData.designs.forEach((design, index) => {
+              console.log(`📦 [MyProjectDetail] Design ${index + 1}:`, {
+                id: design.id,
+                name: design.name,
+                imagesCount: design.images?.length || 0,
+                questionsCount: design.questions?.length || 0,
+              })
+            })
+          }
           
           setProject(projectData)
           
           // 첫 번째 디자인 선택
           if (projectData.designs && projectData.designs.length > 0) {
             setSelectedDesign(projectData.designs[0].name)
-            console.log('선택된 디자인:', projectData.designs[0].name)
-            console.log('디자인 데이터:', projectData.designs[0])
+            console.log('📦 [MyProjectDetail] 선택된 첫 번째 디자인:', projectData.designs[0].name)
           } else {
-            console.warn('디자인이 없습니다.')
+            console.warn('📦 [MyProjectDetail] 디자인이 없습니다.')
           }
         } else {
           setError(result.error || '프로젝트를 불러오는데 실패했습니다.')
@@ -220,15 +227,18 @@ export const MyProjectDetailPage = () => {
                 <p className="my-project-section-label">Designs</p>
                 <div className="my-project-designs-list">
                   {project.designs && project.designs.length > 0 ? (
-                    project.designs.map((design) => (
-                      <button
-                        key={design.id}
-                        className={`my-project-design-item ${selectedDesign === design.name ? 'selected' : ''}`}
-                        onClick={() => handleDesignSelect(design.name)}
-                      >
-                        {design.name}
-                      </button>
-                    ))
+                    <>
+                      {console.log('🎨 [MyProjectDetail] 렌더링할 Designs:', project.designs.map(d => ({ id: d.id, name: d.name })))}
+                      {project.designs.map((design) => (
+                        <button
+                          key={design.id}
+                          className={`my-project-design-item ${selectedDesign === design.name ? 'selected' : ''}`}
+                          onClick={() => handleDesignSelect(design.name)}
+                        >
+                          {design.name}
+                        </button>
+                      ))}
+                    </>
                   ) : (
                     <p style={{ color: '#999', fontSize: '14px' }}>등록된 디자인이 없습니다.</p>
                   )}
