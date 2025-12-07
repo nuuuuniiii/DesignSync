@@ -1,6 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { SearchIcon } from '@/components/Icon/SearchIcon'
+import { ProfileIcon } from '@/components/Icon/ProfileIcon'
+import { useAuth } from '@/contexts/AuthContext'
 
 type PlatformType = 'web' | 'apps'
 
@@ -23,10 +25,16 @@ export const GNB = ({ selectedPlatform = 'web', onPlatformChange }: GNBProps) =>
   const location = useLocation()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+  const { isAuthenticated, logout } = useAuth()
 
   const handleSearch = (query: string) => {
     // TODO: 검색 기능 구현
     console.log('Search:', query)
+  }
+
+  const handleLogout = () => {
+    logout()
+    navigate('/explore')
   }
 
   const handlePlatformClick = (platform: PlatformType) => {
@@ -86,10 +94,23 @@ export const GNB = ({ selectedPlatform = 'web', onPlatformChange }: GNBProps) =>
         </div>
       </div>
 
-      {/* 오른쪽: 인증 버튼 */}
+      {/* 오른쪽: 인증 버튼 또는 프로필 */}
       <div className="gnb-right">
-        <button className="btn-signup">Sign up</button>
-        <button className="btn-signin">Sign In</button>
+        {isAuthenticated ? (
+          <>
+            <button onClick={handleLogout} className="btn-logout">
+              Logout
+            </button>
+            <Link to="/my-page" className="profile-link">
+              <ProfileIcon width={40} height={40} />
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link to="/sign-up" className="btn-signup">Sign up</Link>
+            <Link to="/sign-in" className="btn-signin">Sign In</Link>
+          </>
+        )}
       </div>
     </nav>
   )

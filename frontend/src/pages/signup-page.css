@@ -1,0 +1,162 @@
+/* Sign Up Page Styles */
+
+.signup-page {
+  width: 100%;
+  min-height: calc(100vh - 89px);
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.signup-container {
+  width: 100%;
+  max-width: 600px;
+  background: #ffffff;
+}
+
+.signup-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.signup-header h1 {
+  font-family: var(--font-pretendard);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 100%;
+  color: #000000;
+  margin: 0 0 12px 0;
+}
+
+.signup-header p {
+  font-family: var(--font-pretendard);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 100%;
+  color: #666666;
+  margin: 0;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.signup-form .input-wrapper,
+.signup-form .select-wrapper {
+  width: 100%;
+}
+
+.signup-form .input,
+.signup-form .select {
+  width: 100%;
+  height: 56px;
+  background: #f6f6f6;
+  border: none;
+  border-radius: 6.968px;
+  padding: 12px 24px;
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 100%;
+  color: #484848;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.signup-form .input:focus,
+.signup-form .select:focus {
+  outline: none;
+  background: #ffffff;
+  border: 1px solid #b4fd2c;
+}
+
+.signup-form .input.error,
+.signup-form .select.error {
+  border: 1px solid #ff4444;
+}
+
+.signup-form .input::placeholder {
+  color: #c3c3c3;
+}
+
+.signup-form label {
+  font-family: var(--font-pretendard);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 100%;
+  color: #000000;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.signup-form .error-message {
+  font-family: var(--font-pretendard);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 100%;
+  color: #ff4444;
+  margin-top: 4px;
+}
+
+.signup-actions {
+  margin-top: 8px;
+}
+
+.signup-actions .btn {
+  width: 100%;
+  height: 56px;
+  font-family: var(--font-pretendard);
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 6.968px;
+}
+
+.signup-footer {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.signup-footer p {
+  font-family: var(--font-pretendard);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 100%;
+  color: #666666;
+  margin: 0;
+}
+
+.signup-footer a {
+  color: #000000;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.signup-footer a:hover {
+  text-decoration: underline;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .signup-page {
+    padding: 20px 16px;
+  }
+
+  .signup-header h1 {
+    font-size: 28px;
+  }
+
+  .signup-form {
+    gap: 20px;
+  }
+
+  .signup-form .input,
+  .signup-form .select {
+    font-size: 18px;
+  }
+}
+

@@ -2,14 +2,24 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import { logger } from './utils/logger'
+import testRoutes from './routes/test.routes'
+import projectsRoutes from './routes/projects.routes'
+import designsRoutes from './routes/designs.routes'
+import authRoutes from './routes/auth.routes'
 
 dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 8000
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000'
 
 // Middleware
-app.use(cors())
+app.use(
+  cors({
+    origin: CORS_ORIGIN,
+    credentials: true,
+  })
+)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -18,10 +28,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'DesignSync API Server' })
 })
 
-// API routes will be added here
-app.use('/api', (req, res) => {
-  res.json({ message: 'API endpoint - routes will be added here' })
-})
+// API routes
+app.use('/api/test', testRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/projects', projectsRoutes)
+app.use('/api/projects', designsRoutes)
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {

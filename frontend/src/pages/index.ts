@@ -6,4 +6,6 @@ export { NewFeedbackScreenPage } from './NewFeedbackScreenPage'
 export { RegistrationPage } from './RegistrationPage'
 export { MyProjectDetailPage } from './MyProjectDetailPage'
 export { ProjectOverviewPage } from './ProjectOverviewPage'
+export { SignUpPage } from './SignUpPage'
+export { SignInPage } from './SignInPage'
 

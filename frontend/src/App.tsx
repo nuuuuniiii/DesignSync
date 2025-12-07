@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
 import {
   ExplorePage,
   MyPage,
@@ -8,12 +9,15 @@ import {
   RegistrationPage,
   MyProjectDetailPage,
   ProjectOverviewPage,
+  SignUpPage,
+  SignInPage,
 } from './pages'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
         <Route path="/" element={<Navigate to="/explore" replace />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/my-page" element={<MyPage />} />
@@ -40,9 +44,12 @@ function App() {
           element={<NewFeedbackScreenPage />}
         />
         <Route path="/registration" element={<RegistrationPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/sign-in" element={<SignInPage />} />
         <Route path="*" element={<div>404 - Page Not Found</div>} />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

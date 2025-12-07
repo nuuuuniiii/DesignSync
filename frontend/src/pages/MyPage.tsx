@@ -1,5 +1,7 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
+import { getProjects, Project as ApiProject } from '@/api/projects'
 import { GNB } from '@/components/Layout/GNB'
 import { CommentIcon } from '@/components/Icon/CommentIcon'
 import { ResolvedTag } from '@/components/ResolvedTag/ResolvedTag'
@@ -16,6 +18,18 @@ interface Project {
   isResolved?: boolean
 }
 
+// API Project를 화면용 Project로 변환
+const convertApiProjectToDisplayProject = (apiProject: ApiProject): Project => {
+  return {
+    id: apiProject.id,
+    name: apiProject.name,
+    subtitle: apiProject.description || undefined,
+    imageUrl: apiProject.thumbnail_url || undefined,
+    hasNewFeedback: false, // TODO: 피드백 확인 로직 추가
+    isResolved: apiProject.status === 'resolved',
+  }
+}
+
 /**
  * My Page 화면
  *
@@ -30,28 +44,91 @@ interface Project {
  */
 export const MyPage = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { user, isAuthenticated } = useAuth()
   const [myProjectPlatform, setMyProjectPlatform] = useState<PlatformType>('apps')
   const [myFeedbackPlatform, setMyFeedbackPlatform] = useState<PlatformType>('apps')
   const [selectMode, setSelectMode] = useState(false)
   const [selectedProjects, setSelectedProjects] = useState<string[]>([])
+  const [myProjects, setMyProjects] = useState<Project[]>([])
+  const [feedbackProjects, setFeedbackProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Mock 데이터 - My Project
-  const myProjects: Project[] = Array.from({ length: myProjectPlatform === 'web' ? 6 : 8 }, (_, i) => ({
-    id: String(i + 1),
-    name: 'T map',
-    subtitle: 'UX/UI Flow Redesign',
-    hasNewFeedback: i < (myProjectPlatform === 'apps' ? 4 : 3),
-    isResolved: i === 0,
-  }))
+  // 프로젝트 등록 후 My Page로 돌아왔을 때 플랫폼 필터 자동 설정
+  useEffect(() => {
+    const state = location.state as { fromRegistration?: boolean; platform?: 'web' | 'app' } | null
+    if (state?.fromRegistration && state?.platform) {
+      const platformType: PlatformType = state.platform === 'web' ? 'web' : 'apps'
+      setMyProjectPlatform(platformType)
+      // state 초기화 (한 번만 적용)
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+  }, [location.state, location.pathname, navigate])
 
-  // Mock 데이터 - My Feedback
-  const feedbackProjects: Project[] = Array.from({ length: myFeedbackPlatform === 'apps' ? 4 : 3 }, (_, i) => ({
-    id: String(i + 1),
-    name: 'T map',
-    subtitle: 'UX/UI Flow Redesign',
-    hasNewFeedback: false, // My Feedback은 피드백이 없는 상태로 표시
-    isResolved: i < 2, // 처음 2개만 Resolved 상태
-  }))
+  // My Project 목록 가져오기 함수
+  const fetchMyProjects = useCallback(async () => {
+    if (!isAuthenticated || !user) {
+      setIsLoading(false)
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const platformFilter = myProjectPlatform === 'web' ? 'web' : 'app'
+      const result = await getProjects({
+        platform: platformFilter,
+        userId: user.id,
+      })
+
+      if (result.success && result.data) {
+        const convertedProjects = result.data.map(convertApiProjectToDisplayProject)
+        setMyProjects(convertedProjects)
+      } else {
+        setError(result.error || '프로젝트 목록을 가져오는데 실패했습니다.')
+        setMyProjects([])
+      }
+    } catch (err: any) {
+      setError(err.message || '프로젝트 목록을 가져오는 중 오류가 발생했습니다.')
+      setMyProjects([])
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isAuthenticated, user, myProjectPlatform])
+
+  // My Project 목록 가져오기
+  useEffect(() => {
+    fetchMyProjects()
+  }, [fetchMyProjects])
+
+  // 페이지 포커스 시 목록 갱신 (프로젝트 등록 후 돌아왔을 때)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (location.pathname === '/my-page' && isAuthenticated && user) {
+        fetchMyProjects()
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [location.pathname, isAuthenticated, user, fetchMyProjects])
+
+  // location 변경 시 목록 갱신
+  useEffect(() => {
+    if (location.pathname === '/my-page' && isAuthenticated && user) {
+      fetchMyProjects()
+    }
+  }, [location.pathname, isAuthenticated, user, fetchMyProjects])
+
+  // My Feedback 목록 (현재는 Mock 데이터 유지)
+  useEffect(() => {
+    // TODO: 피드백을 남긴 프로젝트 목록 API 구현
+    setFeedbackProjects([])
+  }, [myFeedbackPlatform])
 
   const handleSelectMode = () => {
     setSelectMode(true)
@@ -169,7 +246,13 @@ export const MyPage = () => {
 
         {/* Projects Grid */}
         <div className="my-project-grid">
-          {myProjectPlatform === 'web' ? (
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: '50px' }}>로딩 중...</div>
+          ) : error ? (
+            <div style={{ textAlign: 'center', padding: '50px', color: '#ff4444' }}>{error}</div>
+          ) : myProjects.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '50px' }}>프로젝트가 없습니다. 새 프로젝트를 추가해보세요.</div>
+          ) : myProjectPlatform === 'web' ? (
             // Web: 2행 × 3열
             Array.from({ length: Math.ceil(myProjects.length / 3) }, (_, rowIndex) => (
               <div key={rowIndex} className="my-project-row my-project-row-web">

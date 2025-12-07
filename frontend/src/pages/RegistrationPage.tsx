@@ -1,9 +1,13 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
 import { Layout } from '@/components/Layout/Layout'
 import { Input } from '@/components/Input/Input'
 import { Select } from '@/components/Select/Select'
 import { Checkbox } from '@/components/Checkbox/Checkbox'
 import { Button } from '@/components/Button/Button'
+import { createProject } from '@/api/projects'
+import { createDesignWithImages } from '@/api/designs'
 import './registration-page.css'
 
 /**
@@ -12,6 +16,34 @@ import './registration-page.css'
  * Figma 디자인: https://www.figma.com/design/jAVPcCd7XLMMhbUO8oHxhn/DesignSync-%EC%9D%91%EC%9A%A9%EB%94%94%EC%9E%90%EC%9D%B8?node-id=10-6817&m=dev
  */
 export const RegistrationPage = () => {
+  const navigate = useNavigate()
+  const { isAuthenticated, isLoading: authLoading, logout } = useAuth()
+  
+  // 로그인 상태 확인 - 로그인하지 않은 경우 로그인 페이지로 리다이렉트
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate('/sign-in', { state: { from: '/registration', message: '프로젝트 생성을 위해 로그인이 필요합니다.' } })
+    }
+  }, [isAuthenticated, authLoading, navigate])
+
+  // 토큰 만료 이벤트 리스너
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      logout()
+      navigate('/sign-in', { 
+        state: { 
+          from: '/registration', 
+          message: '로그인이 만료되었습니다. 다시 로그인해주세요.' 
+        } 
+      })
+    }
+
+    window.addEventListener('auth-token-expired', handleTokenExpired)
+    return () => {
+      window.removeEventListener('auth-token-expired', handleTokenExpired)
+    }
+  }, [navigate, logout])
+
   const [projectName, setProjectName] = useState('')
   const [projectDescription, setProjectDescription] = useState('')
   const [platform, setPlatform] = useState<'web' | 'app'>('web')
@@ -22,7 +54,17 @@ export const RegistrationPage = () => {
   const [designInputs, setDesignInputs] = useState<string[]>([''])
   const [editingDesignId, setEditingDesignId] = useState<string | null>(null)
   const [editingDesignValue, setEditingDesignValue] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const _inputRef = useRef<HTMLInputElement>(null)
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      // 로그인하지 않은 경우 로그인 페이지로 리다이렉트
+      navigate('/sign-in', { state: { from: '/registration' } })
+    }
+  }, [isAuthenticated, authLoading, navigate])
   
   // 각 디자인별 데이터 관리
   interface DesignData {
@@ -30,7 +72,8 @@ export const RegistrationPage = () => {
     customQuestions: string[]
     selectedQuestionCategory: string
     selectedQuestions: string[]
-    uploadedImages: string[]
+    uploadedImages: string[] // base64 미리보기용
+    imageFiles: File[] // 실제 업로드할 파일
   }
   
   const [designsData, setDesignsData] = useState<Record<string, DesignData>>({})
@@ -42,6 +85,7 @@ export const RegistrationPage = () => {
   const selectedQuestionCategory = currentDesignData?.selectedQuestionCategory || ''
   const selectedQuestions = currentDesignData?.selectedQuestions || []
   const uploadedImages = currentDesignData?.uploadedImages || []
+  const imageFiles = currentDesignData?.imageFiles || []
   const [isResolved, setIsResolved] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isQuestionListOpen, setIsQuestionListOpen] = useState(false)
@@ -145,6 +189,7 @@ export const RegistrationPage = () => {
             selectedQuestionCategory: '',
             selectedQuestions: [],
             uploadedImages: [],
+            imageFiles: [],
           },
         })
       }
@@ -203,6 +248,7 @@ export const RegistrationPage = () => {
                 selectedQuestionCategory: '',
                 selectedQuestions: [],
                 uploadedImages: [],
+            imageFiles: [],
               },
             })
           }
@@ -317,6 +363,7 @@ export const RegistrationPage = () => {
             selectedQuestionCategory: '',
             selectedQuestions: [],
             uploadedImages: imageUrls,
+            imageFiles: fileArray,
           },
         }))
       } else {
@@ -330,8 +377,10 @@ export const RegistrationPage = () => {
               selectedQuestionCategory: '',
               selectedQuestions: [],
               uploadedImages: [],
+            imageFiles: [],
             }),
             uploadedImages: [...(prev[targetDesign]?.uploadedImages || []), ...imageUrls],
+            imageFiles: [...(prev[targetDesign]?.imageFiles || []), ...fileArray],
           },
         }))
         
@@ -358,30 +407,135 @@ export const RegistrationPage = () => {
     if (!selectedDesign) return
     
     const newImages = uploadedImages.filter((_, i) => i !== index)
+    const newImageFiles = imageFiles.filter((_, i) => i !== index)
     setDesignsData({
       ...designsData,
       [selectedDesign]: {
         ...designsData[selectedDesign],
         uploadedImages: newImages,
+        imageFiles: newImageFiles,
       },
     })
   }
 
-  const handleSave = () => {
-    // TODO: API 호출
-    console.log('Save project:', {
-      projectName,
-      projectDescription,
-      platform,
-      category,
-      selectedFeedbackTypes,
-      selectedDesign,
-      designName,
-      customQuestions: customQuestions.filter((q) => q.trim() !== ''),
-      selectedQuestionCategory,
-      selectedQuestions,
-      isResolved,
-    })
+  const handleSave = async () => {
+    // 필수 필드 검증
+    if (!projectName.trim()) {
+      setError('프로젝트 이름을 입력해주세요.')
+      return
+    }
+
+    if (!category) {
+      setError('카테고리를 선택해주세요.')
+      return
+    }
+
+    if (selectedFeedbackTypes.length === 0) {
+      setError('최소 하나의 피드백 타입을 선택해주세요.')
+      return
+    }
+
+    setError(null)
+    setIsLoading(true)
+
+    try {
+      const result = await createProject({
+        name: projectName.trim(),
+        description: projectDescription.trim() || undefined,
+        platform,
+        category,
+        feedback_types: selectedFeedbackTypes,
+      })
+
+      if (result.success && result.data) {
+        // 프로젝트 생성 성공
+        const projectId = result.data.id
+
+        // 각 디자인별로 이미지 업로드 및 질문 저장
+        const designNames = Object.keys(designsData)
+        const uploadPromises = designNames.map(async (designName) => {
+          const designData = designsData[designName]
+          
+          // 이미지 파일이 있는 디자인만 업로드
+          if (designData.imageFiles && designData.imageFiles.length > 0) {
+            try {
+              // 질문 데이터 준비
+              const customQuestions = designData.customQuestions?.filter((q) => q.trim() !== '') || []
+              const selectedQuestions = designData.selectedQuestions || []
+              const questionCategory = designData.selectedQuestionCategory || undefined
+
+              const uploadResult = await createDesignWithImages(
+                projectId,
+                designName,
+                designData.imageFiles,
+                {
+                  customQuestions: customQuestions.length > 0 ? customQuestions : undefined,
+                  selectedQuestions: selectedQuestions.length > 0 ? selectedQuestions : undefined,
+                  questionCategory: questionCategory,
+                }
+              )
+              
+              if (!uploadResult.success) {
+                console.error(`Failed to upload images for design ${designName}:`, uploadResult.error)
+                // 토큰 오류인 경우 재throw
+                if (uploadResult.error?.includes('만료') || uploadResult.error?.includes('로그인')) {
+                  throw new Error(uploadResult.error)
+                }
+              }
+            } catch (error: any) {
+              console.error(`Error uploading images for design ${designName}:`, error)
+              // 토큰 오류인 경우 재throw하여 상위에서 처리
+              if (error.message?.includes('만료') || error.message?.includes('로그인')) {
+                throw error
+              }
+            }
+          }
+        })
+
+        // 모든 이미지 업로드 완료 대기
+        try {
+          await Promise.all(uploadPromises)
+        } catch (error: any) {
+          // 토큰 오류인 경우 로그인 페이지로 리다이렉트
+          if (error.message?.includes('만료') || error.message?.includes('로그인')) {
+            logout()
+            navigate('/sign-in', { 
+              state: { 
+                from: '/registration', 
+                message: error.message || '로그인이 만료되었습니다. 다시 로그인해주세요.' 
+              } 
+            })
+            return
+          }
+          // 다른 에러는 무시하고 계속 진행
+          console.error('Error uploading some designs:', error)
+        }
+
+        // 프로젝트 상세 페이지로 이동 또는 My Page로 이동
+        // 사용자가 프로젝트를 확인할 수 있도록 상세 페이지로 이동
+        // 나중에 My Page로 돌아왔을 때 플랫폼 필터 자동 설정을 위해 플랫폼 정보 전달
+        navigate(`/my-projects/${projectId}${platform === 'web' ? '/web' : ''}`, {
+          state: { fromRegistration: true, platform: platform }
+        })
+      } else {
+        // 토큰 오류인 경우 로그인 페이지로 리다이렉트
+        if (result.error?.includes('만료') || result.error?.includes('로그인')) {
+          logout()
+          navigate('/sign-in', { 
+            state: { 
+              from: '/registration', 
+              message: result.error || '로그인이 만료되었습니다. 다시 로그인해주세요.' 
+            } 
+          })
+          return
+        }
+        setError(result.error || '프로젝트 생성에 실패했습니다.')
+      }
+    } catch (err: any) {
+      setError(err.message || '프로젝트 생성 중 오류가 발생했습니다.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const _handleDelete = () => {
@@ -403,6 +557,21 @@ export const RegistrationPage = () => {
         setSelectedDesign('')
       }
     }
+  }
+
+  // 로딩 중이거나 인증되지 않은 경우
+  if (authLoading) {
+    return (
+      <Layout>
+        <div className="registration-page">
+          <div style={{ textAlign: 'center', padding: '50px' }}>로딩 중...</div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return null // useEffect에서 리다이렉트 처리
   }
 
   return (
@@ -612,6 +781,7 @@ export const RegistrationPage = () => {
                                       selectedQuestionCategory: '',
                                       selectedQuestions: [],
                                       uploadedImages: [],
+            imageFiles: [],
                                     },
                                   })
                                 }
@@ -664,8 +834,9 @@ export const RegistrationPage = () => {
                 </button>
               </div>
               <div className="action-buttons">
-                <Button onClick={handleSave} variant="primary" className="action-btn">
-                  Save
+                {error && <div className="error-message" style={{ color: '#ff4444', marginBottom: '8px' }}>{error}</div>}
+                <Button onClick={handleSave} variant="primary" className="action-btn" disabled={isLoading}>
+                  {isLoading ? '저장 중...' : 'Save'}
                 </Button>
               </div>
             </div>
