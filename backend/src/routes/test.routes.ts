@@ -210,11 +210,17 @@ router.get('/all', async (_req: Request, res: Response) => {
     const errorMessage = error instanceof Error ? error.message : 'Database connection failed'
     const errorCode = error && typeof error === 'object' && 'code' in error ? error.code : undefined
     const errorDetails = error && typeof error === 'object' && 'details' in error ? error.details : undefined
+    const detailsValue: string | number | { httpCode?: unknown; name?: unknown } | undefined = 
+      typeof errorCode === 'string' || typeof errorCode === 'number' 
+        ? errorCode 
+        : typeof errorDetails === 'string' || typeof errorDetails === 'number'
+        ? errorDetails
+        : undefined
     results.database = {
       success: false,
       message: 'Database connection failed',
       error: errorMessage,
-      details: errorCode || errorDetails,
+      details: detailsValue,
     }
   }
 
@@ -248,11 +254,17 @@ router.get('/all', async (_req: Request, res: Response) => {
     const errorMessage = error instanceof Error ? error.message : 'Cloudinary connection failed'
     const errorHttpCode = error && typeof error === 'object' && 'http_code' in error ? error.http_code : undefined
     const errorName = error && typeof error === 'object' && 'name' in error ? error.name : undefined
+    const detailsValue: string | number | { httpCode?: unknown; name?: unknown } | undefined = 
+      typeof errorHttpCode === 'string' || typeof errorHttpCode === 'number'
+        ? errorHttpCode
+        : typeof errorName === 'string' || typeof errorName === 'number'
+        ? errorName
+        : undefined
     results.cloudinary = {
       success: false,
       message: 'Cloudinary connection failed',
       error: errorMessage,
-      details: errorHttpCode || errorName,
+      details: detailsValue,
     }
   }
 

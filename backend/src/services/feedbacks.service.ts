@@ -155,18 +155,23 @@ export class FeedbacksService {
       }
 
       // users 정보 추출
-      return (feedbacks || []).map((fb) => ({
-        id: fb.id,
-        project_id: fb.project_id,
-        user_id: fb.user_id,
-        design_id: fb.design_id,
-        question_id: fb.question_id,
-        screen_number: fb.screen_number,
-        feedback_text: fb.feedback_text,
-        created_at: fb.created_at,
-        updated_at: fb.updated_at,
-        user_name: fb.users?.name || null,
-      }))
+      return (feedbacks || []).map((fb) => {
+        const usersData = fb.users as { name?: string | null } | null | undefined
+        const userName = usersData?.name || null
+        
+        return {
+          id: fb.id,
+          project_id: fb.project_id,
+          user_id: fb.user_id,
+          design_id: fb.design_id,
+          question_id: fb.question_id,
+          screen_number: fb.screen_number,
+          feedback_text: fb.feedback_text,
+          created_at: fb.created_at,
+          updated_at: fb.updated_at,
+          user_name: userName,
+        }
+      })
     } catch (error: unknown) {
       logger.error('Error in getFeedbacksByProject:', error)
       if (error instanceof Error) {
@@ -206,18 +211,23 @@ export class FeedbacksService {
         throw new Error(`Failed to fetch feedbacks: ${error.message}`)
       }
 
-      return (feedbacks || []).map((fb) => ({
-        id: fb.id,
-        project_id: fb.project_id,
-        user_id: fb.user_id,
-        design_id: fb.design_id,
-        question_id: fb.question_id,
-        screen_number: fb.screen_number,
-        feedback_text: fb.feedback_text,
-        created_at: fb.created_at,
-        updated_at: fb.updated_at,
-        user_name: fb.users?.name || null,
-      }))
+      return (feedbacks || []).map((fb) => {
+        const usersData = fb.users as { name?: string | null } | null | undefined
+        const userName = usersData?.name || null
+        
+        return {
+          id: fb.id,
+          project_id: fb.project_id,
+          user_id: fb.user_id,
+          design_id: fb.design_id,
+          question_id: fb.question_id,
+          screen_number: fb.screen_number,
+          feedback_text: fb.feedback_text,
+          created_at: fb.created_at,
+          updated_at: fb.updated_at,
+          user_name: userName,
+        }
+      })
     } catch (error: unknown) {
       logger.error('Error in getFeedbacksByDesignAndQuestion:', error)
       if (error instanceof Error) {

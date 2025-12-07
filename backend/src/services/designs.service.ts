@@ -74,7 +74,7 @@ export class DesignsService {
           questionsToCreate.push({
             question_text: questionText.trim(),
             question_type: 'custom',
-            question_category: designData.questionCategory || null,
+            question_category: designData.questionCategory || undefined,
           })
         }
       })
@@ -87,7 +87,7 @@ export class DesignsService {
           questionsToCreate.push({
             question_text: questionText.trim(),
             question_type: 'template',
-            question_category: designData.questionCategory || null,
+            question_category: designData.questionCategory || undefined,
           })
         }
       })
