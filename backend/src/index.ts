@@ -6,6 +6,7 @@ import testRoutes from './routes/test.routes'
 import projectsRoutes from './routes/projects.routes'
 import designsRoutes from './routes/designs.routes'
 import authRoutes from './routes/auth.routes'
+import feedbacksRoutes from './routes/feedbacks.routes'
 
 dotenv.config()
 
@@ -33,6 +34,7 @@ app.use('/api/test', testRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/projects', projectsRoutes)
 app.use('/api/projects', designsRoutes)
+app.use('/api/feedbacks', feedbacksRoutes)
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {

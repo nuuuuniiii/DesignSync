@@ -2,10 +2,12 @@ import { supabaseAdmin } from '../config/supabase'
 import { Project, CreateProjectRequest } from '../types/project.types'
 import { usersService } from './users.service'
 import { questionsService } from './questions.service'
+import { feedbacksService } from './feedbacks.service'
 import { logger } from '../utils/logger'
 
 export interface ProjectWithDetails extends Project {
   feedback_types?: string[]
+  average_ratings?: Record<string, number> // feedback_type -> average rating
   designs?: Array<{
     id: string
     name: string
@@ -21,6 +23,13 @@ export interface ProjectWithDetails extends Project {
       question_type: 'custom' | 'template'
       question_category: string | null
       display_order: number
+      feedbacks?: Array<{
+        id: string
+        screen_number: number | null
+        feedback_text: string
+        user_name: string | null
+        created_at: string
+      }>
     }>
   }>
 }
@@ -191,17 +200,45 @@ export class ProjectsService {
               // 질문 정보 가져오기
               const questions = await questionsService.getQuestionsByDesign(design.id)
 
+              // 각 질문별 피드백 가져오기
+              const questionsWithFeedbacks = await Promise.all(
+                questions.map(async (q) => {
+                  try {
+                    const feedbacks = await feedbacksService.getFeedbacksByDesignAndQuestion(design.id, q.id)
+                    return {
+                      id: q.id,
+                      question_text: q.question_text,
+                      question_type: q.question_type,
+                      question_category: q.question_category,
+                      display_order: q.display_order,
+                      feedbacks: feedbacks.map((fb) => ({
+                        id: fb.id,
+                        screen_number: fb.screen_number,
+                        feedback_text: fb.feedback_text,
+                        user_id: fb.user_id,
+                        user_name: fb.user_name,
+                        created_at: fb.created_at,
+                      })),
+                    }
+                  } catch (error: any) {
+                    logger.error(`Failed to fetch feedbacks for question ${q.id}:`, error)
+                    return {
+                      id: q.id,
+                      question_text: q.question_text,
+                      question_type: q.question_type,
+                      question_category: q.question_category,
+                      display_order: q.display_order,
+                      feedbacks: [],
+                    }
+                  }
+                })
+              )
+
               return {
                 id: design.id,
                 name: design.name,
                 images: imagesError || !images ? [] : images,
-                questions: questions.map((q) => ({
-                  id: q.id,
-                  question_text: q.question_text,
-                  question_type: q.question_type,
-                  question_category: q.question_category,
-                  display_order: q.display_order,
-                })),
+                questions: questionsWithFeedbacks,
               }
             })
           )
@@ -209,6 +246,15 @@ export class ProjectsService {
       } catch (error: any) {
         logger.error(`Failed to fetch designs for project ${id}:`, error)
         designsWithImagesAndQuestions = []
+      }
+
+      // 4. Rating 평균 계산
+      let averageRatings: Record<string, number> = {}
+      try {
+        averageRatings = await feedbacksService.getAverageRatingsByProject(id)
+      } catch (error: any) {
+        logger.error(`Failed to fetch average ratings for project ${id}:`, error)
+        averageRatings = {}
       }
 
       // 빈 배열이라도 항상 포함하여 반환 (명시적으로 필드 설정)
@@ -223,6 +269,7 @@ export class ProjectsService {
         created_at: project.created_at,
         updated_at: project.updated_at,
         feedback_types: Array.isArray(feedbackTypesList) ? feedbackTypesList : [],
+        average_ratings: averageRatings,
         designs: Array.isArray(designsWithImagesAndQuestions) ? designsWithImagesAndQuestions : [],
       }
       
