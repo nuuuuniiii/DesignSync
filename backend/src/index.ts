@@ -59,5 +59,12 @@ const startServer = (port: number) => {
   })
 }
 
-startServer(Number(PORT))
+// Start server only in non-Vercel environments
+// In Vercel, the serverless function will handle requests
+if (!process.env.VERCEL) {
+  startServer(Number(PORT))
+}
+
+// Export app for Vercel serverless functions
+export default app
 
