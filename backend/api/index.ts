@@ -31,29 +31,48 @@ app.use(
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// 라우트 import (빌드된 파일 참조)
-// @ts-ignore - dist 폴더의 빌드된 파일 참조
-import testRoutes from '../dist/routes/test.routes'
-// @ts-ignore
-import projectsRoutes from '../dist/routes/projects.routes'
-// @ts-ignore
-import designsRoutes from '../dist/routes/designs.routes'
-// @ts-ignore
-import authRoutes from '../dist/routes/auth.routes'
-// @ts-ignore
-import feedbacksRoutes from '../dist/routes/feedbacks.routes'
-
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'DesignSync API Server' })
 })
 
-// API routes
-app.use('/api/test', testRoutes)
-app.use('/api/auth', authRoutes)
-app.use('/api/projects', projectsRoutes)
-app.use('/api/projects', designsRoutes)
-app.use('/api/feedbacks', feedbacksRoutes)
+// 라우트 동적 import (빌드된 파일 참조)
+// try-catch로 안전하게 처리
+let testRoutes: express.Router
+let projectsRoutes: express.Router
+let designsRoutes: express.Router
+let authRoutes: express.Router
+let feedbacksRoutes: express.Router
+
+try {
+  // @ts-ignore - dist 폴더의 빌드된 파일 참조
+  testRoutes = require('../dist/routes/test.routes').default
+  // @ts-ignore
+  projectsRoutes = require('../dist/routes/projects.routes').default
+  // @ts-ignore
+  designsRoutes = require('../dist/routes/designs.routes').default
+  // @ts-ignore
+  authRoutes = require('../dist/routes/auth.routes').default
+  // @ts-ignore
+  feedbacksRoutes = require('../dist/routes/feedbacks.routes').default
+
+  // API routes
+  app.use('/api/test', testRoutes)
+  app.use('/api/auth', authRoutes)
+  app.use('/api/projects', projectsRoutes)
+  app.use('/api/projects', designsRoutes)
+  app.use('/api/feedbacks', feedbacksRoutes)
+} catch (error) {
+  console.error('Failed to load routes:', error)
+  // 라우트 로드 실패 시 에러 핸들링
+  app.use('/api/*', (req, res) => {
+    res.status(500).json({ 
+      error: 'Internal server error', 
+      message: 'Routes not loaded properly',
+      details: error instanceof Error ? error.message : String(error)
+    })
+  })
+}
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
