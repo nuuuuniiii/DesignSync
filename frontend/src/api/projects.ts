@@ -23,6 +23,12 @@ async function safeJsonParse<T = unknown>(response: Response): Promise<T> {
   
   if (!contentType || !contentType.includes('application/json')) {
     const text = await response.text()
+    
+    // 404 에러인 경우 더 명확한 메시지 제공
+    if (response.status === 404) {
+      throw new Error('API 엔드포인트를 찾을 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.')
+    }
+    
     throw new Error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`)
   }
   

@@ -17,6 +17,29 @@ const getAuthHeaders = (): Record<string, string> => {
   return headers
 }
 
+// 안전한 JSON 파싱 헬퍼 함수
+async function safeJsonParse<T = unknown>(response: Response): Promise<T> {
+  const contentType = response.headers.get('content-type')
+  
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text()
+    
+    // 404 에러인 경우 더 명확한 메시지 제공
+    if (response.status === 404) {
+      throw new Error('API 엔드포인트를 찾을 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.')
+    }
+    
+    throw new Error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`)
+  }
+  
+  try {
+    return await response.json()
+  } catch (error) {
+    const text = await response.text()
+    throw new Error(`Failed to parse JSON. Response: ${text.substring(0, 100)}`)
+  }
+}
+
 export interface CreateFeedbackRequest {
   project_id: string
   ratings: Record<string, number> // feedback type id -> rating (1-5)
