@@ -13,7 +13,7 @@ export class UsersService {
    * 사용자가 존재하는지 확인하고, 없으면 생성
    */
   async getOrCreateUser(userId: string, email?: string, name?: string): Promise<User> {
-    // 먼저 사용자가 존재하는지 확인
+    // 먼저 사용자가 존재하는지 확인 (id로)
     const { data: existingUser } = await supabaseAdmin
       .from('users')
       .select('*')
@@ -22,6 +22,23 @@ export class UsersService {
 
     if (existingUser) {
       return existingUser
+    }
+
+    // 이메일이 제공된 경우 이메일로도 확인
+    if (email) {
+      const { data: existingEmailUser } = await supabaseAdmin
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .maybeSingle()
+
+      if (existingEmailUser) {
+        // 같은 이메일이 있지만 다른 ID인 경우 에러
+        if (existingEmailUser.id !== userId) {
+          throw new Error(`Failed to create user: Email already exists with different user ID`)
+        }
+        return existingEmailUser
+      }
     }
 
     // 사용자가 없으면 생성
@@ -39,6 +56,10 @@ export class UsersService {
       .single()
 
     if (createError) {
+      // 중복 이메일 에러 처리
+      if (createError.message.includes('duplicate') || createError.message.includes('unique') || createError.code === '23505') {
+        throw new Error('이미 사용 중인 이메일입니다.')
+      }
       throw new Error(`Failed to create user: ${createError.message}`)
     }
 
