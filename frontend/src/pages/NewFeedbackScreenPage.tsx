@@ -349,7 +349,15 @@ export const NewFeedbackScreenPage = () => {
         const webPath = location.pathname.includes('/web') ? '/web' : ''
         navigate(`/projects/${projectId}${webPath}`)
       } else {
-        setError(result.error || '피드백 등록에 실패했습니다.')
+        const errorMsg = result.error || '피드백 등록에 실패했습니다.'
+        setError(errorMsg)
+        
+        // 인증 에러인 경우 로그인 페이지로 이동
+        if (errorMsg.includes('로그인') || errorMsg.includes('인증')) {
+          setTimeout(() => {
+            navigate('/sign-in')
+          }, 2000)
+        }
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : '피드백 등록 중 오류가 발생했습니다.'
