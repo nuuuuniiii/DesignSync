@@ -11,12 +11,15 @@ Vercel 대시보드 → **백엔드 프로젝트 (design-sync-iota)** → Settin
 
 ### 필수 환경변수:
 - `CORS_ORIGIN`: `https://design-sync-vp26.vercel.app`
-- `SUPABASE_URL`: (기존 값 유지)
-- `SUPABASE_SERVICE_ROLE_KEY`: (기존 값 유지)
+- `SUPABASE_URL`: (Supabase 프로젝트의 URL)
+- `SUPABASE_SERVICE_ROLE_KEY`: (Supabase 프로젝트의 Service Role Key) ⚠️
+- `SUPABASE_ANON_KEY`: (Supabase 프로젝트의 Anon/Public Key) ⚠️ **필수!**
 - `CLOUDINARY_CLOUD_NAME`: (기존 값 유지)
 - `CLOUDINARY_API_KEY`: (기존 값 유지)
 - `CLOUDINARY_API_SECRET`: (기존 값 유지)
-- `JWT_SECRET`: (기존 값 유지)
+- `JWT_SECRET`: (기존 값 유지, 선택사항)
+
+⚠️ **중요**: `SUPABASE_ANON_KEY`는 회원가입/로그인에 필수입니다!
 
 ### 중요: 
 환경변수 수정 후 **재배포**가 필요합니다!
