@@ -351,6 +351,108 @@ export class ProjectsService {
   }
 
   /**
+   * 사용자가 피드백을 남긴 프로젝트 목록 조회 (썸네일 포함)
+   */
+  async getFeedbackedProjectsByUser(
+    userId: string,
+    filters?: {
+      platform?: 'web' | 'app'
+    }
+  ): Promise<(Project & { thumbnail_url?: string })[]> {
+    try {
+      // 1. 사용자가 피드백을 남긴 프로젝트 ID 목록 가져오기
+      const { data: feedbacks, error: feedbacksError } = await supabaseAdmin
+        .from('feedbacks')
+        .select('design_id')
+        .eq('user_id', userId)
+
+      if (feedbacksError) {
+        logger.error(`Failed to fetch feedbacks for user ${userId}:`, feedbacksError)
+        return []
+      }
+
+      if (!feedbacks || feedbacks.length === 0) {
+        return []
+      }
+
+      // 2. 디자인 ID로 프로젝트 ID 찾기
+      const designIds = [...new Set(feedbacks.map((fb) => fb.design_id))]
+      const { data: designs, error: designsError } = await supabaseAdmin
+        .from('designs')
+        .select('project_id')
+        .in('id', designIds)
+
+      if (designsError || !designs || designs.length === 0) {
+        return []
+      }
+
+      // 3. 고유한 프로젝트 ID 목록 생성
+      const projectIds = [...new Set(designs.map((d) => d.project_id))]
+
+      // 4. 프로젝트 정보 조회
+      let query = supabaseAdmin
+        .from('projects')
+        .select('*')
+        .in('id', projectIds)
+
+      if (filters?.platform) {
+        query = query.eq('platform', filters.platform)
+      }
+
+      const { data: projects, error: projectsError } = await query.order('created_at', { ascending: false })
+
+      if (projectsError || !projects) {
+        logger.error('Failed to fetch feedbacked projects:', projectsError)
+        return []
+      }
+
+      // 5. 각 프로젝트의 썸네일 이미지 가져오기
+      const projectsWithThumbnails = await Promise.all(
+        projects.map(async (project) => {
+          try {
+            const { data: designs, error: designsError } = await supabaseAdmin
+              .from('designs')
+              .select('id')
+              .eq('project_id', project.id)
+              .order('created_at', { ascending: true })
+              .limit(1)
+
+            if (designsError || !designs || designs.length === 0) {
+              return { ...project, thumbnail_url: undefined }
+            }
+
+            const designId = designs[0].id
+
+            const { data: images, error: imagesError } = await supabaseAdmin
+              .from('design_images')
+              .select('cloudinary_url')
+              .eq('design_id', designId)
+              .order('display_order', { ascending: true })
+              .limit(1)
+
+            if (imagesError || !images || images.length === 0) {
+              return { ...project, thumbnail_url: undefined }
+            }
+
+            return {
+              ...project,
+              thumbnail_url: images[0].cloudinary_url,
+            }
+          } catch (error) {
+            logger.error(`Failed to fetch thumbnail for project ${project.id}:`, error)
+            return { ...project, thumbnail_url: undefined }
+          }
+        })
+      )
+
+      return projectsWithThumbnails
+    } catch (error: unknown) {
+      logger.error('Error in getFeedbackedProjectsByUser:', error)
+      return []
+    }
+  }
+
+  /**
    * 프로젝트 삭제
    */
   async deleteProject(projectId: string, userId: string): Promise<void> {

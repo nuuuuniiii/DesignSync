@@ -143,6 +143,41 @@ export class ProjectsController {
       })
     }
   }
+
+  /**
+   * 사용자가 피드백을 남긴 프로젝트 목록 조회
+   * GET /api/projects/feedbacked
+   */
+  async getFeedbackedProjects(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User authentication required',
+        })
+      }
+
+      const filters = {
+        platform: req.query.platform as 'web' | 'app' | undefined,
+      }
+
+      const projects = await projectsService.getFeedbackedProjectsByUser(userId, filters)
+
+      res.json({
+        success: true,
+        data: projects,
+      })
+    } catch (error: unknown) {
+      logger.error('Error fetching feedbacked projects:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch feedbacked projects'
+      res.status(500).json({
+        success: false,
+        error: errorMessage,
+      })
+    }
+  }
 }
 
 export const projectsController = new ProjectsController()

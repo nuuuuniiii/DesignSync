@@ -274,6 +274,62 @@ export async function getProjectById(id: string): Promise<ApiResponse<ProjectWit
 }
 
 /**
+ * 사용자가 피드백을 남긴 프로젝트 목록 조회 API
+ */
+export async function getFeedbackedProjects(filters?: {
+  platform?: 'web' | 'app'
+}): Promise<ApiResponse<Project[]>> {
+  try {
+    const token = getAuthToken()
+    if (!token) {
+      return {
+        success: false,
+        error: '인증이 필요합니다. 로그인해주세요.',
+      }
+    }
+
+    const queryParams = new URLSearchParams()
+    if (filters?.platform) queryParams.append('platform', filters.platform)
+
+    const url = `${API_BASE_URL}/projects/feedbacked${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    })
+
+    const result = await safeJsonParse<ApiResponse<Project[]>>(response)
+
+    if (!response.ok) {
+      // 401 에러인 경우 (토큰 만료)
+      if (response.status === 401) {
+        localStorage.removeItem('auth_token')
+        window.dispatchEvent(new Event('auth-token-expired'))
+        return {
+          success: false,
+          error: '로그인이 만료되었습니다. 다시 로그인해주세요.',
+        }
+      }
+      return {
+        success: false,
+        error: result.error || '피드백을 남긴 프로젝트 목록을 가져오는데 실패했습니다.',
+      }
+    }
+
+    return {
+      success: true,
+      data: result.data || [],
+    }
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : '네트워크 오류가 발생했습니다.'
+    return {
+      success: false,
+      error: errorMessage,
+    }
+  }
+}
+
+/**
  * 프로젝트 삭제 API
  */
 export async function deleteProject(id: string): Promise<ApiResponse<void>> {

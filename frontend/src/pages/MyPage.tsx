@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { getProjects, deleteProject, Project as ApiProject } from '@/api/projects'
+import { getProjects, deleteProject, getFeedbackedProjects, Project as ApiProject } from '@/api/projects'
 import { GNB } from '@/components/Layout/GNB'
 import { CommentIcon } from '@/components/Icon/CommentIcon'
 import { ResolvedTag } from '@/components/ResolvedTag/ResolvedTag'
@@ -125,11 +125,35 @@ export const MyPage = () => {
     }
   }, [location.pathname, isAuthenticated, user, fetchMyProjects])
 
-  // My Feedback 목록 (현재는 Mock 데이터 유지)
+  // My Feedback 목록 가져오기 함수
+  const fetchFeedbackProjects = useCallback(async () => {
+    if (!isAuthenticated || !user) {
+      setFeedbackProjects([])
+      return
+    }
+
+    try {
+      const platformFilter = myFeedbackPlatform === 'web' ? 'web' : 'app'
+      const result = await getFeedbackedProjects({
+        platform: platformFilter,
+      })
+
+      if (result.success && result.data) {
+        const convertedProjects = result.data.map(convertApiProjectToDisplayProject)
+        setFeedbackProjects(convertedProjects)
+      } else {
+        setFeedbackProjects([])
+      }
+    } catch (err: unknown) {
+      console.error('피드백 프로젝트 목록 가져오기 오류:', err)
+      setFeedbackProjects([])
+    }
+  }, [isAuthenticated, user, myFeedbackPlatform])
+
+  // My Feedback 목록 가져오기
   useEffect(() => {
-    // TODO: 피드백을 남긴 프로젝트 목록 API 구현
-    setFeedbackProjects([])
-  }, [myFeedbackPlatform])
+    fetchFeedbackProjects()
+  }, [fetchFeedbackProjects])
 
   const handleSelectMode = () => {
     setSelectMode(true)

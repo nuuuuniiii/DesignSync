@@ -10,6 +10,9 @@ router.post('/', authenticateToken, (req, res) => projectsController.createProje
 // 프로젝트 목록 조회는 인증 불필요 (필터링 가능)
 router.get('/', (req, res) => projectsController.getProjects(req, res))
 
+// 사용자가 피드백을 남긴 프로젝트 목록 조회 (인증 필요)
+router.get('/feedbacked', authenticateToken, (req, res) => projectsController.getFeedbackedProjects(req, res))
+
 // 프로젝트 상세 조회는 인증 불필요
 router.get('/:id', (req, res) => projectsController.getProjectById(req, res))
 
