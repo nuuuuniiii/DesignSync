@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { GNB } from '@/components/Layout/GNB'
+import { getProjectById, ProjectWithDetails } from '@/api/projects'
+import { createFeedback } from '@/api/feedbacks'
+import { useAuth } from '@/contexts/AuthContext'
 import './new-feedback-screen.css'
 
 /**
@@ -18,85 +21,125 @@ export const NewFeedbackScreenPage = () => {
   // URL 경로에 따라 app 여부 판단
   const isApp = !location.pathname.includes('/web')
   
-  const [selectedDesign, setSelectedDesign] = useState('Login')
-  const [selectedScreen, setSelectedScreen] = useState<number | null>(1)
+  const [project, setProject] = useState<ProjectWithDetails | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedDesign, setSelectedDesign] = useState<string | null>(null)
+  const [selectedScreen, setSelectedScreen] = useState<number | null>(null)
   const [focusedInput, setFocusedInput] = useState<string | null>(null)
   // 각 디자인별, 질문별로 여러 피드백을 관리 (각 피드백은 id, text, screenNumber를 가짐)
   // 구조: { designName: { questionId: [{ id, text, screenNumber }] } }
-  const [feedbacks, setFeedbacks] = useState<Record<string, Record<string, Array<{ id: string; text: string; screenNumber: number | null }>>>>({
-    'Login': {
-      'q1': [{ id: 'q1-input-0', text: '', screenNumber: null }],
-      'q2': [{ id: 'q2-input-0', text: '', screenNumber: null }],
-    },
-    'Home': {
-      'q1': [{ id: 'q1-input-0', text: '', screenNumber: null }],
-      'q2': [{ id: 'q2-input-0', text: '', screenNumber: null }],
-    },
-    'Explore': {
-      'q1': [{ id: 'q1-input-0', text: '', screenNumber: null }],
-      'q2': [{ id: 'q2-input-0', text: '', screenNumber: null }],
-    },
-    'Image Generation': {
-      'q1': [{ id: 'q1-input-0', text: '', screenNumber: null }],
-      'q2': [{ id: 'q2-input-0', text: '', screenNumber: null }],
-    },
-  })
+  const [feedbacks, setFeedbacks] = useState<Record<string, Record<string, Array<{ id: string; text: string; screenNumber: number | null }>>>>({})
   const [dropdownOpen, setDropdownOpen] = useState<Record<string, boolean>>({})
+  const [ratings, setRatings] = useState<Record<string, number>>({}) // location.state에서 받아온 ratings
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { isAuthenticated } = useAuth()
 
-  // Mock 데이터
-  const projectName = 'Toss Redesign Project'
-  const description = 'Streamlining key tasks to reduce friction and make financial actions faster and more intuitive.'
+  // location.state에서 ratings 받아오기
+  useEffect(() => {
+    if (location.state?.ratings) {
+      setRatings(location.state.ratings)
+    }
+  }, [location.state])
 
-  const designs = [
-    { id: '1', name: 'Login' },
-    { id: '2', name: 'Home' },
-    { id: '3', name: 'Explore' },
-    { id: '4', name: 'Image Generation' },
-  ]
+  // 프로젝트 데이터 가져오기
+  useEffect(() => {
+    const fetchProject = async () => {
+      if (!projectId) {
+        setError('프로젝트 ID가 없습니다.')
+        setIsLoading(false)
+        return
+      }
 
-  const screens = [
-    { id: '1', number: 1 },
-    { id: '2', number: 2 },
-    { id: '3', number: 3 },
-    { id: '4', number: 4 },
-    { id: '5', number: 5 },
-    { id: '6', number: 6 },
-    { id: '7', number: 7 },
-  ]
+      setIsLoading(true)
+      setError(null)
 
-  const questions = [
-    {
-      id: 'q1',
-      number: 'Q1',
-      text: '"다음에 무엇을 해야 하는지" 바로 파악할 수 있었나요?',
-    },
-    {
-      id: 'q2',
-      number: 'Q2',
-      text: '서비스에서 사용하는 용어나 개념이 자연스럽고 익숙하게 느껴졌나요?',
-    },
-  ]
+      try {
+        const result = await getProjectById(projectId)
+        
+        if (result.success && result.data) {
+          const projectData = result.data as ProjectWithDetails
+          setProject(projectData)
+          
+          // 첫 번째 디자인 선택 및 초기화
+          if (projectData.designs && projectData.designs.length > 0) {
+            const firstDesign = projectData.designs[0]
+            setSelectedDesign(firstDesign.name)
+            
+            // 첫 번째 디자인의 질문에 맞춰 feedbacks 초기화
+            if (firstDesign.questions && firstDesign.questions.length > 0) {
+              const initialFeedbacks: Record<string, Array<{ id: string; text: string; screenNumber: number | null }>> = {}
+              
+              firstDesign.questions.forEach((q, index) => {
+                initialFeedbacks[q.id] = [{ 
+                  id: `${q.id}-input-0`, 
+                  text: '', 
+                  screenNumber: null 
+                }]
+              })
+              
+              setFeedbacks({
+                [firstDesign.name]: initialFeedbacks,
+              })
+              
+              // 첫 번째 이미지가 있으면 선택
+              if (firstDesign.images && firstDesign.images.length > 0) {
+                setSelectedScreen(firstDesign.images[0].screen_number)
+              }
+            }
+          }
+        } else {
+          setError(result.error || '프로젝트를 불러오는데 실패했습니다.')
+        }
+      } catch (err: any) {
+        setError(err.message || '프로젝트를 불러오는 중 오류가 발생했습니다.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProject()
+  }, [projectId])
 
   const handleDesignSelect = (designName: string) => {
     setSelectedDesign(designName)
     // 디자인 변경 시 포커스 해제
     setFocusedInput(null)
+    
+    // 선택된 디자인 데이터 찾기
+    const designData = project?.designs?.find((d) => d.name === designName)
+    
     // 선택된 디자인에 대한 피드백이 없으면 초기화
-    if (!feedbacks[designName]) {
+    if (!feedbacks[designName] && designData?.questions) {
+      const initialFeedbacks: Record<string, Array<{ id: string; text: string; screenNumber: number | null }>> = {}
+      
+      designData.questions.forEach((q) => {
+        initialFeedbacks[q.id] = [{ 
+          id: `${q.id}-input-0`, 
+          text: '', 
+          screenNumber: null 
+        }]
+      })
+      
       setFeedbacks((prev) => ({
         ...prev,
-        [designName]: {
-          'q1': [{ id: 'q1-input-0', text: '', screenNumber: null }],
-          'q2': [{ id: 'q2-input-0', text: '', screenNumber: null }],
-        },
+        [designName]: initialFeedbacks,
       }))
+      
+      // 첫 번째 이미지가 있으면 선택
+      if (designData.images && designData.images.length > 0) {
+        setSelectedScreen(designData.images[0].screen_number)
+      }
+    } else if (designData?.images && designData.images.length > 0) {
+      // 피드백이 이미 있더라도 첫 번째 이미지 선택
+      setSelectedScreen(designData.images[0].screen_number)
     }
   }
 
   const handleScreenSelect = (screenNumber: number) => {
     setSelectedScreen(screenNumber)
     // 포커스된 입력 필드가 있으면 해당 필드에만 화면 번호 입력
-    if (focusedInput) {
+    if (focusedInput && selectedDesign) {
       const parts = focusedInput.split('-')
       const questionId = parts[0]
       const feedbackId = parts.slice(1).join('-')
@@ -121,6 +164,8 @@ export const NewFeedbackScreenPage = () => {
   }
 
   const handleFeedbackChange = (questionId: string, feedbackId: string, value: string) => {
+    if (!selectedDesign) return
+    
     setFeedbacks((prev) => ({
       ...prev,
       [selectedDesign]: {
@@ -149,6 +194,8 @@ export const NewFeedbackScreenPage = () => {
   const handleFeedbackKeyDown = (questionId: string, feedbackId: string, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
+      if (!selectedDesign || !feedbacks[selectedDesign] || !feedbacks[selectedDesign][questionId]) return
+      
       const currentFeedback = feedbacks[selectedDesign][questionId].find((fb) => fb.id === feedbackId)
       if (currentFeedback && currentFeedback.text.trim() !== '') {
         // 마지막 필드가 비어있지 않은 경우에만 새 필드 추가
@@ -188,6 +235,8 @@ export const NewFeedbackScreenPage = () => {
   }
 
   const handleNumberSelect = (questionId: string, feedbackId: string, number: number) => {
+    if (!selectedDesign) return
+    
     setFeedbacks((prev) => ({
       ...prev,
       [selectedDesign]: {
@@ -204,6 +253,8 @@ export const NewFeedbackScreenPage = () => {
   }
 
   const handleDeleteFeedback = (questionId: string, feedbackId: string) => {
+    if (!selectedDesign) return
+    
     setFeedbacks((prev) => {
       const updatedFeedbacks = prev[selectedDesign][questionId].filter((fb) => fb.id !== feedbackId)
       // 마지막 피드백을 삭제하면 빈 필드 하나는 남겨둠
@@ -231,17 +282,114 @@ export const NewFeedbackScreenPage = () => {
     navigate(`/projects/${projectId}${webPath}/feedback/rating`)
   }
 
-  const handleRegister = () => {
-    // TODO: 피드백 등록 로직
-    console.log('Register feedback:', {
-      projectId,
-      selectedDesign,
-      selectedScreen,
-      feedbacks,
-    })
-    const webPath = location.pathname.includes('/web') ? '/web' : ''
-    navigate(`/projects/${projectId}${webPath}`)
+  const handleRegister = async () => {
+    if (!projectId || !project) {
+      setError('프로젝트 정보가 없습니다.')
+      return
+    }
+
+    if (!isAuthenticated) {
+      setError('피드백을 등록하려면 로그인이 필요합니다.')
+      return
+    }
+
+    // 모든 디자인의 피드백 수집
+    const feedbackList: Array<{
+      design_id: string
+      question_id: string
+      screen_number: number | null
+      feedback_text: string
+    }> = []
+
+    // 각 디자인의 피드백을 순회하며 수집
+    for (const designName in feedbacks) {
+      const designData = project.designs?.find((d) => d.name === designName)
+      if (!designData) continue
+
+      const designFeedbacks = feedbacks[designName]
+      for (const questionId in designFeedbacks) {
+        const questionFeedbacks = designFeedbacks[questionId]
+        
+        // 각 피드백 항목 처리
+        for (const feedback of questionFeedbacks) {
+          // 빈 피드백은 건너뛰기
+          if (!feedback.text || feedback.text.trim() === '') {
+            continue
+          }
+
+          feedbackList.push({
+            design_id: designData.id,
+            question_id: questionId,
+            screen_number: feedback.screenNumber,
+            feedback_text: feedback.text.trim(),
+          })
+        }
+      }
+    }
+
+    // 피드백이 하나도 없으면 에러
+    if (feedbackList.length === 0) {
+      setError('피드백을 하나 이상 입력해주세요.')
+      return
+    }
+
+    setIsSubmitting(true)
+    setError(null)
+
+    try {
+      const result = await createFeedback({
+        project_id: projectId,
+        ratings: ratings, // location.state에서 받아온 ratings
+        feedbacks: feedbackList,
+      })
+
+      if (result.success) {
+        // 성공 시 프로젝트 상세 페이지로 이동
+        const webPath = location.pathname.includes('/web') ? '/web' : ''
+        navigate(`/projects/${projectId}${webPath}`)
+      } else {
+        setError(result.error || '피드백 등록에 실패했습니다.')
+      }
+    } catch (err: any) {
+      setError(err.message || '피드백 등록 중 오류가 발생했습니다.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
+
+  // 로딩 상태
+  if (isLoading) {
+    return (
+      <div className="new-feedback-screen-page">
+        <GNB selectedPlatform={isApp ? 'apps' : 'web'} />
+        <div style={{ textAlign: 'center', padding: '50px' }}>로딩 중...</div>
+      </div>
+    )
+  }
+
+  // 에러 상태
+  if (error || !project) {
+    return (
+      <div className="new-feedback-screen-page">
+        <GNB selectedPlatform={isApp ? 'apps' : 'web'} />
+        <div style={{ textAlign: 'center', padding: '50px', color: '#ff4444' }}>
+          {error || '프로젝트를 찾을 수 없습니다.'}
+        </div>
+      </div>
+    )
+  }
+
+  // 선택된 디자인의 데이터 가져오기
+  const selectedDesignData = project.designs?.find((d) => d.name === selectedDesign)
+  const screens = selectedDesignData?.images || []
+  const questions = selectedDesignData?.questions || []
+
+  // 질문을 표시 형식으로 변환
+  const formattedQuestions = questions.map((q, index) => ({
+    id: q.id,
+    number: `Q${index + 1}`,
+    text: q.question_text,
+  }))
 
   return (
     <div className="new-feedback-screen-page">
@@ -255,11 +403,11 @@ export const NewFeedbackScreenPage = () => {
         {/* Project Section */}
         <div className="project-section">
           <div className="project-header">
-            <p className="project-name">{projectName}</p>
+            <p className="project-name">{project.name}</p>
           </div>
           <div className="project-platform-field">
             <div className="platform-tag">{isApp ? 'App' : 'Web'}</div>
-            <p className="project-description">{description}</p>
+            <p className="project-description">{project.description || ''}</p>
           </div>
         </div>
 
@@ -272,35 +420,60 @@ export const NewFeedbackScreenPage = () => {
             <div className="designs-section">
               <p className="section-label">Designs</p>
               <div className="designs-list">
-                {designs.map((design) => (
-                  <button
-                    key={design.id}
-                    className={`design-item ${selectedDesign === design.name ? 'selected' : ''}`}
-                    onClick={() => handleDesignSelect(design.name)}
-                  >
-                    {design.name}
-                  </button>
-                ))}
+                {project.designs && project.designs.length > 0 ? (
+                  project.designs.map((design) => (
+                    <button
+                      key={design.id}
+                      className={`design-item ${selectedDesign === design.name ? 'selected' : ''}`}
+                      onClick={() => handleDesignSelect(design.name)}
+                    >
+                      {design.name}
+                    </button>
+                  ))
+                ) : (
+                  <p style={{ color: '#999', fontSize: '14px', padding: '10px' }}>
+                    등록된 디자인이 없습니다.
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Screen Section */}
             <div className="screen-section">
-              <div className="screens-container">
-                {screens.map((screen) => (
-                  <div
-                    key={screen.id}
-                    className={`screen-card ${selectedScreen === screen.number ? 'selected' : ''}`}
-                    onClick={() => handleScreenSelect(screen.number)}
-                  >
-                    <div className="screen-image-wrapper">
-                      <div className="screen-placeholder"></div>
+              <div className={`screens-container ${isApp ? 'screens-container-app' : 'screens-container-web'}`}>
+                {screens.length > 0 ? (
+                  screens.map((image) => (
+                    <div
+                      key={image.id}
+                      className={`screen-card ${isApp ? 'screen-card-app' : 'screen-card-web'} ${selectedScreen === image.screen_number ? 'selected' : ''}`}
+                      onClick={() => handleScreenSelect(image.screen_number)}
+                    >
+                      <div className="screen-image-wrapper">
+                        <img 
+                          src={image.cloudinary_url} 
+                          alt={`Screen ${image.screen_number}`} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      </div>
+                      {!isApp && (
+                        <div className="screen-badge-wrapper">
+                          <div className="screen-number-badge">
+                            <span>{image.screen_number}</span>
+                          </div>
+                        </div>
+                      )}
+                      {isApp && (
+                        <div className="screen-number-badge">
+                          <span>{image.screen_number}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="screen-number-badge">
-                      <span>{screen.number}</span>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p style={{ color: '#999', fontSize: '14px', padding: '20px' }}>
+                    {selectedDesign ? '이 디자인에 등록된 이미지가 없습니다.' : '디자인을 선택해주세요.'}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -308,8 +481,9 @@ export const NewFeedbackScreenPage = () => {
 
         {/* Feedbacks Section */}
         <div className="feedbacks-section">
-          {questions.map((question) => {
-            const questionFeedbacks = feedbacks[selectedDesign]?.[question.id] || []
+          {formattedQuestions.length > 0 ? (
+            formattedQuestions.map((question) => {
+              const questionFeedbacks = selectedDesign ? (feedbacks[selectedDesign]?.[question.id] || []) : []
 
             return (
               <div key={question.id} className="feedback-section">
@@ -367,13 +541,13 @@ export const NewFeedbackScreenPage = () => {
                       {isDropdownOpen && feedback.screenNumber !== null && (
                         <div className="dropdown-menu">
                           <div className="dropdown-number-list">
-                            {Array.from({ length: screens.length }, (_, i) => i + 1).map((num, index) => (
-                              <div key={num} className="dropdown-number-item">
+                            {screens.map((image, index) => (
+                              <div key={image.id} className="dropdown-number-item">
                                 <div
                                   className="dropdown-number-circle"
-                                  onClick={() => handleNumberSelect(question.id, feedback.id, num)}
+                                  onClick={() => handleNumberSelect(question.id, feedback.id, image.screen_number)}
                                 >
-                                  {num}
+                                  {image.screen_number}
                                 </div>
                                 {index < screens.length - 1 && <div className="dropdown-number-divider"></div>}
                               </div>
@@ -386,8 +560,25 @@ export const NewFeedbackScreenPage = () => {
                 })}
               </div>
             )
-          })}
+          })
+          ) : (
+            <p style={{ color: '#999', fontSize: '14px', padding: '20px' }}>
+              {selectedDesign ? '이 디자인에 등록된 질문이 없습니다.' : '디자인을 선택해주세요.'}
+            </p>
+          )}
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div style={{ 
+            color: '#ff4444', 
+            fontSize: '14px', 
+            padding: '10px 0',
+            textAlign: 'center' 
+          }}>
+            {error}
+          </div>
+        )}
 
         {/* Navigation Buttons */}
         <div className="navigation-buttons">
@@ -398,7 +589,7 @@ export const NewFeedbackScreenPage = () => {
               <path d="M58.6816 31V16.8594H63.9941C67.2363 16.8594 68.9746 18.832 68.9746 21.5469C68.9746 24.2617 67.2168 26.2148 63.9551 26.2148H61.2207V31H58.6816ZM61.2207 24.125H63.6035C65.5176 24.125 66.377 23.0508 66.377 21.5469C66.377 20.0234 65.5176 18.9883 63.6035 18.9883H61.2207V24.125ZM70.9082 31V20.3945H73.3301V22.1523H73.4473C73.8184 20.9414 74.8535 20.2383 76.0645 20.2383C76.3379 20.2383 76.7285 20.2578 76.9629 20.2969V22.6016C76.748 22.5234 76.2207 22.4453 75.8105 22.4453C74.4238 22.4453 73.4082 23.4023 73.4082 24.75V31H70.9082ZM82.8027 31.2148C79.5996 31.2148 77.6465 29.0859 77.6465 25.7656C77.6465 22.4844 79.6387 20.2578 82.666 20.2578C85.2637 20.2578 87.5098 21.8789 87.5098 25.6094V26.3906H80.1074C80.1367 28.1973 81.2012 29.2617 82.8223 29.2617C83.916 29.2617 84.6582 28.793 84.9707 28.168H87.4121C86.9629 30.0039 85.2637 31.2148 82.8027 31.2148ZM80.127 24.6914H85.127C85.1074 23.2461 84.1504 22.1914 82.7051 22.1914C81.2012 22.1914 80.2051 23.334 80.127 24.6914ZM98.6035 20.3945L94.8145 31H92.0801L88.291 20.3945H90.9473L93.3887 28.2852H93.5059L95.9668 20.3945H98.6035ZM100.166 31V20.3945H102.666V31H100.166ZM101.436 18.8906C100.654 18.8906 99.9902 18.2852 99.9902 17.5234C99.9902 16.7812 100.654 16.1758 101.436 16.1758C102.236 16.1758 102.881 16.7812 102.881 17.5234C102.881 18.2852 102.236 18.8906 101.436 18.8906ZM109.678 31.2148C106.592 31.2148 104.6 29.0273 104.6 25.7461C104.6 22.4453 106.592 20.2578 109.678 20.2578C112.783 20.2578 114.756 22.4453 114.756 25.7461C114.756 29.0273 112.783 31.2148 109.678 31.2148ZM109.697 29.2227C111.396 29.2227 112.236 27.6797 112.236 25.7266C112.236 23.793 111.396 22.2305 109.697 22.2305C107.959 22.2305 107.119 23.793 107.119 25.7266C107.119 27.6797 107.959 29.2227 109.697 29.2227ZM123.467 26.5469V20.3945H125.947V31H123.545V29.125H123.428C122.939 30.2969 121.826 31.1367 120.244 31.1367C118.154 31.1367 116.709 29.6914 116.689 27.1523V20.3945H119.189V26.7617C119.189 28.1094 119.99 28.9688 121.201 28.9688C122.295 28.9688 123.467 28.168 123.467 26.5469ZM134.346 23.4219C134.189 22.6211 133.525 22.1133 132.471 22.1133C131.396 22.1133 130.615 22.6406 130.635 23.3633C130.615 23.9102 131.064 24.3203 132.139 24.5742L133.936 24.9453C135.947 25.3945 136.904 26.3125 136.924 27.8359C136.904 29.8281 135.166 31.2148 132.393 31.2148C129.697 31.2148 128.096 30.0039 127.842 27.9727H130.381C130.537 28.8711 131.24 29.3203 132.393 29.3203C133.584 29.3203 134.385 28.832 134.385 28.0508C134.385 27.4453 133.896 27.0547 132.842 26.8203L131.143 26.4492C129.17 26.0586 128.154 25.0234 128.154 23.5C128.154 21.5469 129.834 20.2578 132.432 20.2578C134.971 20.2578 136.533 21.4883 136.709 23.4219H134.346Z" fill="white"/>
             </svg>
           </button>
-          <button onClick={handleRegister} className="btn-register">
+          <button onClick={handleRegister} className="btn-register" disabled={isSubmitting}>
             <svg width="174" height="48" viewBox="0 0 174 48" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="174" height="48" rx="8.4" fill="black"/>
               <path d="M41.3125 31V16.8594H46.625C49.8672 16.8594 51.6055 18.6758 51.6055 21.3711C51.6055 23.2949 50.7266 24.7207 49.0664 25.3945L52.1133 31H49.2812L46.5078 25.8242H43.8516V31H41.3125ZM43.8516 23.6953H46.2344C48.1484 23.6953 49.0078 22.875 49.0078 21.3711C49.0078 19.8672 48.1484 18.9883 46.2344 18.9883H43.8516V23.6953ZM58.2266 31.2148C55.0234 31.2148 53.0703 29.0859 53.0703 25.7656C53.0703 22.4844 55.0625 20.2578 58.0898 20.2578C60.6875 20.2578 62.9336 21.8789 62.9336 25.6094V26.3906H55.5312C55.5605 28.1973 56.625 29.2617 58.2461 29.2617C59.3398 29.2617 60.082 28.793 60.3945 28.168H62.8359C62.3867 30.0039 60.6875 31.2148 58.2266 31.2148ZM55.5508 24.6914H60.5508C60.5312 23.2461 59.5742 22.1914 58.1289 22.1914C56.625 22.1914 55.6289 23.334 55.5508 24.6914ZM69.4961 35.1992C66.6836 35.1992 64.9062 33.9492 64.7305 31.957H67.2109C67.3867 32.875 68.2656 33.3242 69.5352 33.3242C71.0195 33.3242 71.9961 32.6797 71.9961 31.1172V29.0859H71.8789C71.4883 29.8672 70.6484 30.8438 68.8125 30.8438C66.3711 30.8438 64.4375 29.0664 64.4375 25.6094C64.4375 22.1133 66.3711 20.2578 68.832 20.2578C70.707 20.2578 71.4883 21.3711 71.8789 22.1328H71.9961V20.3945H74.457V31.1758C74.457 33.8906 72.3672 35.1992 69.4961 35.1992ZM69.4961 28.8906C71.0977 28.8906 72.0156 27.6797 72.0156 25.6484C72.0156 23.6367 71.1172 22.2891 69.4961 22.2891C67.8359 22.2891 66.9766 23.7148 66.9766 25.6484C66.9766 27.6016 67.8555 28.8906 69.4961 28.8906ZM76.8398 31V20.3945H79.3398V31H76.8398ZM78.1094 18.8906C77.3281 18.8906 76.6641 18.2852 76.6641 17.5234C76.6641 16.7812 77.3281 16.1758 78.1094 16.1758C78.9102 16.1758 79.5547 16.7812 79.5547 17.5234C79.5547 18.2852 78.9102 18.8906 78.1094 18.8906ZM87.7383 23.4219C87.582 22.6211 86.918 22.1133 85.8633 22.1133C84.7891 22.1133 84.0078 22.6406 84.0273 23.3633C84.0078 23.9102 84.457 24.3203 85.5312 24.5742L87.3281 24.9453C89.3398 25.3945 90.2969 26.3125 90.3164 27.8359C90.2969 29.8281 88.5586 31.2148 85.7852 31.2148C83.0898 31.2148 81.4883 30.0039 81.2344 27.9727H83.7734C83.9297 28.8711 84.6328 29.3203 85.7852 29.3203C86.9766 29.3203 87.7773 28.832 87.7773 28.0508C87.7773 27.4453 87.2891 27.0547 86.2344 26.8203L84.5352 26.4492C82.5625 26.0586 81.5469 25.0234 81.5469 23.5C81.5469 21.5469 83.2266 20.2578 85.8242 20.2578C88.3633 20.2578 89.9258 21.4883 90.1016 23.4219H87.7383ZM97.5039 20.3945V22.3086H95.4141V27.8164C95.4141 28.832 95.9219 29.0469 96.5469 29.0469C96.8398 29.0469 97.3281 29.0273 97.6406 29.0078V31.0391C97.3477 31.0977 96.8594 31.1367 96.2344 31.1367C94.3594 31.1367 92.9141 30.2188 92.9336 28.2266V22.3086H91.4102V20.3945H92.9336V17.8555H95.4141V20.3945H97.5039ZM104.008 31.2148C100.805 31.2148 98.8516 29.0859 98.8516 25.7656C98.8516 22.4844 100.844 20.2578 103.871 20.2578C106.469 20.2578 108.715 21.8789 108.715 25.6094V26.3906H101.312C101.342 28.1973 102.406 29.2617 104.027 29.2617C105.121 29.2617 105.863 28.793 106.176 28.168H108.617C108.168 30.0039 106.469 31.2148 104.008 31.2148ZM101.332 24.6914H106.332C106.312 23.2461 105.355 22.1914 103.91 22.1914C102.406 22.1914 101.41 23.334 101.332 24.6914ZM110.648 31V20.3945H113.07V22.1523H113.188C113.559 20.9414 114.594 20.2383 115.805 20.2383C116.078 20.2383 116.469 20.2578 116.703 20.2969V22.6016C116.488 22.5234 115.961 22.4453 115.551 22.4453C114.164 22.4453 113.148 23.4023 113.148 24.75V31H110.648Z" fill="white"/>

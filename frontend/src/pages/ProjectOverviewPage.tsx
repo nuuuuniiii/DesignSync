@@ -4,6 +4,7 @@ import { GNB } from '@/components/Layout/GNB'
 import { StarRating } from '@/components/StarRating/StarRating'
 import { FeedbackItem } from '@/components/FeedbackItem/FeedbackItem'
 import { getProjectById, ProjectWithDetails } from '@/api/projects'
+import { useAuth } from '@/contexts/AuthContext'
 import './project-overview.css'
 
 /**
@@ -26,6 +27,7 @@ export const ProjectOverviewPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedDesign, setSelectedDesign] = useState<string | null>(null)
+  const { user } = useAuth()
 
   // 프로젝트 데이터 가져오기
   useEffect(() => {
@@ -113,12 +115,23 @@ export const ProjectOverviewPage = () => {
   const questions = selectedDesignData?.questions || []
 
   // 질문을 FeedbackItem 형식으로 변환
-  const formattedQuestions = questions.map((q, index) => ({
-    id: q.id,
-    number: `${index + 1}`,
-    text: q.question_text,
-    feedbacks: [], // 피드백은 추후 API 연동
-  }))
+  const formattedQuestions = questions.map((q, index) => {
+    // 백엔드에서 받아온 피드백 데이터를 FeedbackItem 형식으로 변환
+    const feedbacksData = (q.feedbacks || []).map((fb) => ({
+      id: fb.id,
+      screenNumber: fb.screen_number || 1, // screen_number가 null이면 1로 기본값 설정
+      author: fb.user_name || '익명',
+      content: fb.feedback_text,
+      isMyComment: user?.id && fb.user_id ? user.id === fb.user_id : false,
+    }))
+
+    return {
+      id: q.id,
+      number: `${index + 1}`,
+      text: q.question_text,
+      feedbacks: feedbacksData,
+    }
+  })
 
   // 선택한 피드백 타입만 별점 표시
   const allFeedbackTypes = [
@@ -132,12 +145,13 @@ export const ProjectOverviewPage = () => {
 
   // 프로젝트에서 선택한 피드백 타입만 필터링
   const selectedFeedbackTypes = project.feedback_types || []
+  const averageRatings = project.average_ratings || {}
   const ratingTypes = allFeedbackTypes
     .filter((type) => selectedFeedbackTypes.includes(type))
     .map((type, index) => ({
       id: `${index + 1}`,
       name: type,
-      rating: 0, // 추후 API 연동 시 실제 평균 별점 표시
+      rating: averageRatings[type] || 0, // 평균 별점 표시
     }))
 
   const leftRatings = ratingTypes.slice(0, Math.ceil(ratingTypes.length / 2))

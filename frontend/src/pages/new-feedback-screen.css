@@ -180,6 +180,11 @@
 
 .screens-container {
   display: flex;
+  width: 100%;
+}
+
+/* App 스타일 (app=on) */
+.screens-container-app {
   gap: 34px;
   padding: 33px 0;
   overflow-x: auto;
@@ -187,30 +192,59 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: #c3c3c3 transparent;
-  width: 100%;
+  align-items: center;
 }
 
-.screens-container::-webkit-scrollbar {
+.screens-container-app::-webkit-scrollbar {
   height: 8px;
 }
 
-.screens-container::-webkit-scrollbar-track {
+.screens-container-app::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.screens-container::-webkit-scrollbar-thumb {
+.screens-container-app::-webkit-scrollbar-thumb {
   background: #c3c3c3;
   border-radius: 4px;
 }
 
-.screens-container::-webkit-scrollbar-thumb:hover {
+.screens-container-app::-webkit-scrollbar-thumb:hover {
+  background: #a5a5a5;
+}
+
+/* Web 스타일 (app=off) */
+.screens-container-web {
+  display: flex;
+  gap: 49px;
+  align-items: center;
+  padding: 0;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #c3c3c3 transparent;
+}
+
+.screens-container-web::-webkit-scrollbar {
+  height: 8px;
+}
+
+.screens-container-web::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.screens-container-web::-webkit-scrollbar-thumb {
+  background: #c3c3c3;
+  border-radius: 4px;
+}
+
+.screens-container-web::-webkit-scrollbar-thumb:hover {
   background: #a5a5a5;
 }
 
 .screen-card {
   position: relative;
-  width: 310px;
-  height: 533.789px;
   border-radius: 15.064px;
   box-shadow: 0px 4.519px 7.532px 0px rgba(0, 0, 0, 0.12);
   padding: 6px 5px;
@@ -227,6 +261,22 @@
 
 .screen-card.selected {
   border: 2px solid #b4fd2c;
+}
+
+/* App 스타일 (app=on) */
+.screen-card-app {
+  width: 310px;
+  height: 533.789px;
+}
+
+/* Web 스타일 (app=off) */
+.screen-card-web {
+  width: 440px;
+  height: 273px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
 }
 
 .screen-image-wrapper {
@@ -250,7 +300,8 @@
   background-size: 20px 20px;
 }
 
-.screen-number-badge {
+/* App 스타일 (app=on) - 절대 위치 */
+.screen-card-app .screen-number-badge {
   position: absolute;
   top: 6px;
   left: 5px;
@@ -262,6 +313,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Web 스타일 (app=off) - badge wrapper */
+.screen-badge-wrapper {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 10px 0 0;
+  width: 100%;
+  z-index: 10;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.screen-card-web .screen-number-badge {
+  width: 26px;
+  height: 26px;
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
   z-index: 10;
   pointer-events: none;
 }

@@ -54,6 +54,7 @@ export interface Project {
 
 export interface ProjectWithDetails extends Project {
   feedback_types?: string[]
+  average_ratings?: Record<string, number> // feedback_type -> average rating
   designs?: Array<{
     id: string
     name: string
@@ -69,6 +70,14 @@ export interface ProjectWithDetails extends Project {
       question_type: 'custom' | 'template'
       question_category: string | null
       display_order: number
+      feedbacks?: Array<{
+        id: string
+        screen_number: number | null
+        feedback_text: string
+        user_id: string | null
+        user_name: string | null
+        created_at: string
+      }>
     }>
   }>
 }

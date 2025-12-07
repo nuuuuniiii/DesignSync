@@ -1,8 +1,22 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import React from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { GNB } from '@/components/Layout/GNB'
+import { getProjectById, ProjectWithDetails } from '@/api/projects'
 import './new-feedback-rating.css'
+
+// 피드백 타입 이름을 ID로 변환하는 함수
+const getFeedbackTypeId = (typeName: string): string | null => {
+  const typeMap: Record<string, string> = {
+    'User Flow': 'user-flow',
+    'UX Writing': 'ux-writing',
+    'Interaction Design': 'interaction-design',
+    'Information Architecture': 'information-architecture',
+    'Visual Design': 'visual-design',
+    'Usability': 'usability',
+  }
+  return typeMap[typeName] || null
+}
 
 /**
  * New Feedback Rating 화면
@@ -18,20 +32,57 @@ export const NewFeedbackRatingPage = () => {
   // URL 경로에 따라 app 여부 판단
   const isApp = !location.pathname.includes('/web')
   
-  const [ratings, setRatings] = useState<Record<string, number>>({
-    'user-flow': 0,
-    'ux-writing': 0,
-    'interaction-design': 0,
-    'information-architecture': 0,
-    'visual-design': 0,
-    'usability': 0,
-  })
+  const [project, setProject] = useState<ProjectWithDetails | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [ratings, setRatings] = useState<Record<string, number>>({})
 
-  // Mock 데이터
-  const projectName = 'Toss Redesign Project'
-  const description = 'Streamlining key tasks to reduce friction and make financial actions faster and more intuitive.'
+  // 프로젝트 데이터 가져오기
+  useEffect(() => {
+    const fetchProject = async () => {
+      if (!projectId) {
+        setError('프로젝트 ID가 없습니다.')
+        setIsLoading(false)
+        return
+      }
 
-  const ratingTypes = [
+      setIsLoading(true)
+      setError(null)
+
+      try {
+        const result = await getProjectById(projectId)
+        
+        if (result.success && result.data) {
+          const projectData = result.data as ProjectWithDetails
+          setProject(projectData)
+          
+          // 선택한 피드백 타입만으로 ratings 초기화
+          const selectedFeedbackTypes = projectData.feedback_types || []
+          const initialRatings: Record<string, number> = {}
+          
+          selectedFeedbackTypes.forEach((type) => {
+            const typeId = getFeedbackTypeId(type)
+            if (typeId) {
+              initialRatings[typeId] = 0
+            }
+          })
+          
+          setRatings(initialRatings)
+        } else {
+          setError(result.error || '프로젝트를 불러오는데 실패했습니다.')
+        }
+      } catch (err: any) {
+        setError(err.message || '프로젝트를 불러오는 중 오류가 발생했습니다.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProject()
+  }, [projectId])
+
+  // 모든 가능한 피드백 타입 정의
+  const allRatingTypes = [
     {
       id: 'user-flow',
       name: 'User Flow',
@@ -64,8 +115,14 @@ export const NewFeedbackRatingPage = () => {
     },
   ]
 
-  const leftRatings = ratingTypes.slice(0, 3)
-  const rightRatings = ratingTypes.slice(3, 6)
+  // 프로젝트에서 선택한 피드백 타입만 필터링
+  const selectedFeedbackTypes = project?.feedback_types || []
+  const ratingTypes = allRatingTypes.filter((type) => 
+    selectedFeedbackTypes.includes(type.name)
+  )
+
+  const leftRatings = ratingTypes.slice(0, Math.ceil(ratingTypes.length / 2))
+  const rightRatings = ratingTypes.slice(Math.ceil(ratingTypes.length / 2))
 
   const handleRatingChange = (typeId: string, value: number) => {
     setRatings((prev) => ({
@@ -85,6 +142,28 @@ export const NewFeedbackRatingPage = () => {
     navigate(`/projects/${projectId}${webPath}/feedback/screen`, { state: { ratings } })
   }
 
+  // 로딩 상태
+  if (isLoading) {
+    return (
+      <div className="new-feedback-rating-page">
+        <GNB selectedPlatform={isApp ? 'apps' : 'web'} />
+        <div style={{ textAlign: 'center', padding: '50px' }}>로딩 중...</div>
+      </div>
+    )
+  }
+
+  // 에러 상태
+  if (error || !project) {
+    return (
+      <div className="new-feedback-rating-page">
+        <GNB selectedPlatform={isApp ? 'apps' : 'web'} />
+        <div style={{ textAlign: 'center', padding: '50px', color: '#ff4444' }}>
+          {error || '프로젝트를 찾을 수 없습니다.'}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="new-feedback-rating-page">
       <GNB selectedPlatform={isApp ? 'apps' : 'web'} />
@@ -97,11 +176,11 @@ export const NewFeedbackRatingPage = () => {
         {/* Project Section */}
         <div className="project-section">
           <div className="project-header">
-            <p className="project-name">{projectName}</p>
+            <p className="project-name">{project.name}</p>
           </div>
           <div className="project-platform-field">
             <div className="platform-tag">{isApp ? 'App' : 'Web'}</div>
-            <p className="project-description">{description}</p>
+            <p className="project-description">{project.description || ''}</p>
           </div>
         </div>
 
@@ -109,49 +188,55 @@ export const NewFeedbackRatingPage = () => {
         <div className="rating-section-wrapper">
           <div className="rating-section">
             <p className="rating-section-label">Ratings</p>
-            <div className="ratings-container">
-              {/* Left Column */}
-              <div className="ratings-column">
-                {leftRatings.map((rating, index) => (
-                  <React.Fragment key={rating.id}>
-                    <div className="rating-block">
-                      <div className="rating-info">
-                        <p className="rating-name">{rating.name}</p>
-                        <p className="rating-description">{rating.description}</p>
+            {ratingTypes.length > 0 ? (
+              <div className="ratings-container">
+                {/* Left Column */}
+                <div className="ratings-column">
+                  {leftRatings.map((rating, index) => (
+                    <React.Fragment key={rating.id}>
+                      <div className="rating-block">
+                        <div className="rating-info">
+                          <p className="rating-name">{rating.name}</p>
+                          <p className="rating-description">{rating.description}</p>
+                        </div>
+                        <div className="rating-slider-wrapper">
+                          <RatingSlider
+                            value={ratings[rating.id] || 0}
+                            onChange={(value) => handleRatingChange(rating.id, value)}
+                          />
+                        </div>
                       </div>
-                      <div className="rating-slider-wrapper">
-                        <RatingSlider
-                          value={ratings[rating.id]}
-                          onChange={(value) => handleRatingChange(rating.id, value)}
-                        />
-                      </div>
-                    </div>
-                    {index < leftRatings.length - 1 && <div className="section-divider-line"></div>}
-                  </React.Fragment>
-                ))}
-              </div>
+                      {index < leftRatings.length - 1 && <div className="section-divider-line"></div>}
+                    </React.Fragment>
+                  ))}
+                </div>
 
-              {/* Right Column */}
-              <div className="ratings-column">
-                {rightRatings.map((rating, index) => (
-                  <React.Fragment key={rating.id}>
-                    <div className="rating-block">
-                      <div className="rating-info">
-                        <p className="rating-name">{rating.name}</p>
-                        <p className="rating-description">{rating.description}</p>
+                {/* Right Column */}
+                <div className="ratings-column">
+                  {rightRatings.map((rating, index) => (
+                    <React.Fragment key={rating.id}>
+                      <div className="rating-block">
+                        <div className="rating-info">
+                          <p className="rating-name">{rating.name}</p>
+                          <p className="rating-description">{rating.description}</p>
+                        </div>
+                        <div className="rating-slider-wrapper">
+                          <RatingSlider
+                            value={ratings[rating.id] || 0}
+                            onChange={(value) => handleRatingChange(rating.id, value)}
+                          />
+                        </div>
                       </div>
-                      <div className="rating-slider-wrapper">
-                        <RatingSlider
-                          value={ratings[rating.id]}
-                          onChange={(value) => handleRatingChange(rating.id, value)}
-                        />
-                      </div>
-                    </div>
-                    {index < rightRatings.length - 1 && <div className="section-divider-line"></div>}
-                  </React.Fragment>
-                ))}
+                      {index < rightRatings.length - 1 && <div className="section-divider-line"></div>}
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                선택된 피드백 타입이 없습니다.
+              </div>
+            )}
           </div>
 
           {/* Next Button */}
