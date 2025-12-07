@@ -31,7 +31,20 @@ app.use(
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// Health check
+// Health check (루트 경로와 /health 모두 지원)
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'DesignSync API Server',
+    routesLoaded,
+    routeError: routeError ? routeError.message : null,
+    endpoints: {
+      health: '/health',
+      api: '/api'
+    }
+  })
+})
+
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
