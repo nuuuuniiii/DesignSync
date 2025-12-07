@@ -12,12 +12,13 @@ dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 8000
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000'
+// CORS 설정: Vercel 환경에서는 모든 origin 허용 또는 환경변수 사용
+const CORS_ORIGIN = process.env.CORS_ORIGIN || '*'
 
 // Middleware
 app.use(
   cors({
-    origin: CORS_ORIGIN,
+    origin: CORS_ORIGIN === '*' ? true : CORS_ORIGIN,
     credentials: true,
   })
 )
