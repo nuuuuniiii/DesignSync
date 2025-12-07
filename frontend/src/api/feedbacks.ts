@@ -64,6 +64,15 @@ export async function createFeedback(
   data: CreateFeedbackRequest
 ): Promise<ApiResponse<{ feedback_id: string }>> {
   try {
+    // 토큰 확인
+    const token = getAuthToken()
+    if (!token) {
+      return {
+        success: false,
+        error: '로그인이 필요합니다. 로그인 후 다시 시도해주세요.',
+      }
+    }
+
     const response = await fetch(`${API_BASE_URL}/feedbacks`, {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -73,6 +82,15 @@ export async function createFeedback(
     const result = await safeJsonParse<ApiResponse<{ feedback_id: string }>>(response)
 
     if (!response.ok) {
+      // 401 에러인 경우 (토큰 만료)
+      if (response.status === 401) {
+        localStorage.removeItem('auth_token')
+        window.dispatchEvent(new Event('auth-token-expired'))
+        return {
+          success: false,
+          error: '로그인이 만료되었습니다. 다시 로그인해주세요.',
+        }
+      }
       return {
         success: false,
         error: result.error || '피드백 생성에 실패했습니다.',
