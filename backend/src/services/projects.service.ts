@@ -187,6 +187,7 @@ export class ProjectsService {
           logger.error(`Failed to fetch designs for project ${id}:`, designsError)
           designsWithImagesAndQuestions = []
         } else if (designs && designs.length > 0) {
+          logger.info(`[Backend] 프로젝트 ${id}에 ${designs.length}개의 Design 발견:`, designs.map(d => ({ id: d.id, name: d.name })))
           // 4. 각 디자인별 이미지 및 질문 정보 가져오기
           designsWithImagesAndQuestions = await Promise.all(
             designs.map(async (design) => {
@@ -281,8 +282,10 @@ export class ProjectsService {
         feedbackTypes: result.feedback_types,
         hasDesigns: !!result.designs,
         designsCount: result.designs?.length || 0,
+        designs: result.designs?.map(d => ({ id: d.id, name: d.name, imagesCount: d.images?.length || 0, questionsCount: d.questions?.length || 0 })),
         resultKeys: Object.keys(result),
       })
+      logger.info(`[Backend] 프로젝트 ${id} 상세 조회 완료: ${result.designs?.length || 0}개의 Design 반환`)
       
       return result
     } catch (error: unknown) {
