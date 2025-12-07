@@ -346,6 +346,32 @@ export class ProjectsService {
 
     return projectsWithThumbnails
   }
+
+  /**
+   * 프로젝트 삭제
+   */
+  async deleteProject(projectId: string, userId: string): Promise<void> {
+    // 1. 프로젝트가 존재하는지 확인
+    const project = await this.getProjectById(projectId)
+    if (!project) {
+      throw new Error('Project not found')
+    }
+
+    // 2. 프로젝트 소유자 확인
+    if (project.user_id !== userId) {
+      throw new Error('Unauthorized: You can only delete your own projects')
+    }
+
+    // 3. 프로젝트 삭제 (CASCADE로 관련 데이터 자동 삭제)
+    const { error: deleteError } = await supabaseAdmin
+      .from('projects')
+      .delete()
+      .eq('id', projectId)
+
+    if (deleteError) {
+      throw new Error(`Failed to delete project: ${deleteError.message}`)
+    }
+  }
 }
 
 export const projectsService = new ProjectsService()

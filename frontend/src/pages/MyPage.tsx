@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { getProjects, Project as ApiProject } from '@/api/projects'
+import { getProjects, deleteProject, Project as ApiProject } from '@/api/projects'
 import { GNB } from '@/components/Layout/GNB'
 import { CommentIcon } from '@/components/Icon/CommentIcon'
 import { ResolvedTag } from '@/components/ResolvedTag/ResolvedTag'
@@ -167,10 +167,40 @@ export const MyPage = () => {
     }
   }
 
-  const handleDelete = () => {
-    console.log('Delete projects:', selectedProjects)
-    setSelectedProjects([])
-    setSelectMode(false)
+  const handleDelete = async () => {
+    if (selectedProjects.length === 0) {
+      return
+    }
+
+    // 삭제 확인
+    const confirmMessage = `선택한 ${selectedProjects.length}개의 프로젝트를 삭제하시겠습니까?`
+    if (!window.confirm(confirmMessage)) {
+      return
+    }
+
+    try {
+      // 모든 선택된 프로젝트 삭제
+      const deletePromises = selectedProjects.map((projectId) => deleteProject(projectId))
+      const results = await Promise.allSettled(deletePromises)
+
+      // 삭제 결과 확인
+      const failedDeletes = results.filter((result) => result.status === 'rejected' || (result.status === 'fulfilled' && !result.value.success))
+      
+      if (failedDeletes.length > 0) {
+        alert(`일부 프로젝트 삭제에 실패했습니다. (${failedDeletes.length}/${selectedProjects.length})`)
+      } else {
+        // 성공적으로 삭제된 경우 목록 새로고침
+        await fetchMyProjects()
+      }
+
+      // Select 모드 해제
+      setSelectedProjects([])
+      setSelectMode(false)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : '프로젝트 삭제 중 오류가 발생했습니다.'
+      alert(errorMessage)
+      console.error('Delete projects error:', error)
+    }
   }
 
   const handleAddProject = () => {

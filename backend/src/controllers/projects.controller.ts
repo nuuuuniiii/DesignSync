@@ -94,6 +94,55 @@ export class ProjectsController {
       })
     }
   }
+
+  /**
+   * 프로젝트 삭제
+   * DELETE /api/projects/:id
+   */
+  async deleteProject(req: Request, res: Response) {
+    try {
+      const { id } = req.params
+      const userId = req.user?.id
+
+      if (!userId) {
+        return res.status(401).json({
+          success: false,
+          error: 'User authentication required',
+        })
+      }
+
+      await projectsService.deleteProject(id, userId)
+
+      res.json({
+        success: true,
+        message: 'Project deleted successfully',
+      })
+    } catch (error: unknown) {
+      logger.error('Error deleting project:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete project'
+      
+      // 404 에러 처리
+      if (errorMessage.includes('not found')) {
+        return res.status(404).json({
+          success: false,
+          error: errorMessage,
+        })
+      }
+      
+      // 403 에러 처리
+      if (errorMessage.includes('Unauthorized')) {
+        return res.status(403).json({
+          success: false,
+          error: errorMessage,
+        })
+      }
+
+      res.status(500).json({
+        success: false,
+        error: errorMessage,
+      })
+    }
+  }
 }
 
 export const projectsController = new ProjectsController()

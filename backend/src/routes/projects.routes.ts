@@ -13,5 +13,8 @@ router.get('/', (req, res) => projectsController.getProjects(req, res))
 // 프로젝트 상세 조회는 인증 불필요
 router.get('/:id', (req, res) => projectsController.getProjectById(req, res))
 
+// 프로젝트 삭제는 인증 필요
+router.delete('/:id', authenticateToken, (req, res) => projectsController.deleteProject(req, res))
+
 export default router
 
