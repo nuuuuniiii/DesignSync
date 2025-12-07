@@ -361,6 +361,7 @@ export class ProjectsService {
   ): Promise<(Project & { thumbnail_url?: string })[]> {
     try {
       // 1. 사용자가 피드백을 남긴 프로젝트 ID 목록 가져오기 (feedbacks 테이블에서 직접)
+      // feedbacks 테이블에는 project_id가 직접 저장되어 있고, rating만 있는 경우도 feedbacks 레코드가 생성됨
       const { data: feedbacks, error: feedbacksError } = await supabaseAdmin
         .from('feedbacks')
         .select('project_id')
@@ -372,31 +373,14 @@ export class ProjectsService {
         return []
       }
 
-      // 2. 사용자가 rating만 남긴 프로젝트도 포함 (feedback_ratings 테이블)
-      const { data: ratings, error: ratingsError } = await supabaseAdmin
-        .from('feedback_ratings')
-        .select('feedback_id')
-        .eq('user_id', userId)
-
-      let ratingProjectIds: string[] = []
-      if (!ratingsError && ratings && ratings.length > 0) {
-        const ratingFeedbackIds = [...new Set(ratings.map((r) => r.feedback_id))]
-        const { data: ratingFeedbacks, error: ratingFeedbacksError } = await supabaseAdmin
-          .from('feedbacks')
-          .select('project_id')
-          .in('id', ratingFeedbackIds)
-
-        if (!ratingFeedbacksError && ratingFeedbacks) {
-          ratingProjectIds = ratingFeedbacks.map((f) => f.project_id).filter((id): id is string => !!id)
-        }
+      if (!feedbacks || feedbacks.length === 0) {
+        logger.info(`No feedbacks found for user ${userId}`)
+        return []
       }
 
-      // 3. 피드백과 rating을 합쳐서 고유한 프로젝트 ID 목록 생성
+      // 2. 고유한 프로젝트 ID 목록 생성 (중복 제거)
       const allProjectIds = [
-        ...new Set([
-          ...(feedbacks?.map((f) => f.project_id).filter((id): id is string => !!id) || []),
-          ...ratingProjectIds,
-        ]),
+        ...new Set(feedbacks.map((f) => f.project_id).filter((id): id is string => !!id)),
       ]
 
       if (allProjectIds.length === 0) {
