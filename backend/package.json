@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "npx -p typescript tsc",
+    "build": "npx -p typescript tsc && npm run build:clean",
+    "build:clean": "rm -f api/*.js api/*.js.map api/*.d.ts api/*.d.ts.map",
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.{ts,json}\"",

@@ -5,6 +5,12 @@ node_modules/
 dist/
 build/
 
+# Vercel serverless function compiled files (should not be compiled)
+api/*.js
+api/*.js.map
+api/*.d.ts
+api/*.d.ts.map
+
 # Environment variables
 .env
 .env.local
