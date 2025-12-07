@@ -1,5 +1,22 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
+// 안전한 JSON 파싱 헬퍼 함수
+async function safeJsonParse<T = unknown>(response: Response): Promise<T> {
+  const contentType = response.headers.get('content-type')
+  
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text()
+    throw new Error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`)
+  }
+  
+  try {
+    return await response.json()
+  } catch (error) {
+    const text = await response.text()
+    throw new Error(`Failed to parse JSON. Response: ${text.substring(0, 100)}`)
+  }
+}
+
 export interface SignUpRequest {
   email: string
   password: string
@@ -62,7 +79,7 @@ export async function signUp(data: SignUpRequest): Promise<ApiResponse<AuthRespo
       body: JSON.stringify(data),
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<AuthResponse>>(response)
 
     if (!response.ok) {
       return {
@@ -102,7 +119,7 @@ export async function signIn(data: SignInRequest): Promise<ApiResponse<AuthRespo
       body: JSON.stringify(data),
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<AuthResponse>>(response)
 
     if (!response.ok) {
       return {
@@ -150,7 +167,7 @@ export async function getCurrentUser(): Promise<ApiResponse<AuthResponse['user']
       },
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<AuthResponse['user']>>(response)
 
     if (!response.ok) {
       // 토큰이 만료되었거나 유효하지 않은 경우

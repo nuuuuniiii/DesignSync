@@ -47,7 +47,7 @@ export async function createFeedback(
       body: JSON.stringify(data),
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<{ feedback_id: string }>>(response)
 
     if (!response.ok) {
       return {

@@ -5,6 +5,23 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem('auth_token')
 }
 
+// 안전한 JSON 파싱 헬퍼 함수
+async function safeJsonParse<T = unknown>(response: Response): Promise<T> {
+  const contentType = response.headers.get('content-type')
+  
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text()
+    throw new Error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`)
+  }
+  
+  try {
+    return await response.json()
+  } catch (error) {
+    const text = await response.text()
+    throw new Error(`Failed to parse JSON. Response: ${text.substring(0, 100)}`)
+  }
+}
+
 export interface CreateDesignResponse {
   design: {
     id: string
@@ -90,7 +107,7 @@ export async function createDesignWithImages(
       body: formData,
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<CreateDesignResponse>>(response)
 
     if (!response.ok) {
       // 401 에러인 경우 (토큰 만료)

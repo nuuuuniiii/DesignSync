@@ -17,6 +17,23 @@ const getAuthHeaders = (): Record<string, string> => {
   return headers
 }
 
+// 안전한 JSON 파싱 헬퍼 함수
+async function safeJsonParse<T = unknown>(response: Response): Promise<T> {
+  const contentType = response.headers.get('content-type')
+  
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text()
+    throw new Error(`Expected JSON but got ${contentType}. Response: ${text.substring(0, 100)}`)
+  }
+  
+  try {
+    return await response.json()
+  } catch (error) {
+    const text = await response.text()
+    throw new Error(`Failed to parse JSON. Response: ${text.substring(0, 100)}`)
+  }
+}
+
 export interface CreateProjectRequest {
   name: string
   description?: string
@@ -128,7 +145,7 @@ export async function createProject(
       body: JSON.stringify(requestData),
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<Project>>(response)
 
     if (!response.ok) {
       // 401 에러인 경우 (토큰 만료)
@@ -185,7 +202,7 @@ export async function getProjects(filters?: {
       },
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<Project[]>>(response)
 
     if (!response.ok) {
       return {
@@ -219,7 +236,7 @@ export async function getProjectById(id: string): Promise<ApiResponse<ProjectWit
       },
     })
 
-    const result = await response.json()
+    const result = await safeJsonParse<ApiResponse<ProjectWithDetails>>(response)
     
     // 디버깅: API 응답 전체 확인
     console.log('📡 API 응답 전체:', result)
