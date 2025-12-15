@@ -282,8 +282,9 @@
   display: flex;
   width: 100%;
   padding: 30px 36px 30px 56px;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+  gap: 16px;
   box-sizing: border-box;
 }
 

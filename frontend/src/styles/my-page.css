@@ -232,8 +232,8 @@
 
 .my-project-row-apps {
   padding: 30px 56px;
-  justify-content: space-between;
-  gap: 0;
+  justify-content: flex-start;
+  gap: 16px;
   width: 100%;
 }
 
